@@ -1,0 +1,2471 @@
+<!DOCTYPE html>
+<html lang="kk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EduSmart Elite | Интерактивті Платформа</title>
+    <link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #059669;
+            --primary-glow: rgba(5, 150, 105, 0.40);
+            --secondary: #d97706;
+            --accent: #0891b2;
+            --danger: #dc2626;
+            --gold: #f59e0b;
+            --bg: #f0fdf6;
+            --card-bg: #ffffff;
+            --text-main: #0f2318;
+            --text-dim: #4b7263;
+            --border: #bbf0d9;
+            --shadow: 0 8px 40px -8px rgba(5,150,105,0.14);
+            --shadow-lg: 0 20px 60px -10px rgba(5,150,105,0.22);
+            --glass: rgba(240,253,246,0.92);
+            --nav-h: 76px;
+        }
+        .dark-mode {
+            --bg: #071510;
+            --card-bg: #0e211a;
+            --text-main: #d1fae5;
+            --text-dim: #5a9e7e;
+            --border: #1a3d2b;
+            --primary-glow: rgba(5,150,105,0.22);
+            --glass: rgba(7,21,16,0.94);
+            --shadow: 0 8px 40px -8px rgba(0,0,0,0.6);
+            --shadow-lg: 0 20px 60px -10px rgba(0,0,0,0.7);
+        }
+
+        * { margin:0; padding:0; box-sizing:border-box; font-family:'Sora',sans-serif; }
+
+        /* SCROLLBAR */
+        ::-webkit-scrollbar { width:6px; }
+        ::-webkit-scrollbar-track { background:transparent; }
+        ::-webkit-scrollbar-thumb { background:var(--primary); border-radius:10px; }
+
+        body {
+            background: var(--bg);
+            color: var(--text-main);
+            transition: background 0.4s, color 0.4s;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* ANIMATED BG ORBS */
+        .bg-orb {
+            position:fixed; border-radius:50%; pointer-events:none; z-index:0;
+            filter:blur(80px); opacity:0.18;
+            animation: floatOrb 12s ease-in-out infinite;
+        }
+        .bg-orb-1 { width:500px;height:500px;background:#059669;top:-100px;right:-100px; }
+        .bg-orb-2 { width:350px;height:350px;background:#d97706;bottom:-80px;left:-80px; animation-delay:4s; }
+        .bg-orb-3 { width:250px;height:250px;background:#0891b2;top:50%;left:50%;transform:translate(-50%,-50%); animation-delay:8s; }
+        @keyframes floatOrb {
+            0%,100%{transform:translate(0,0) scale(1);}
+            50%{transform:translate(20px,-30px) scale(1.08);}
+        }
+        .dark-mode .bg-orb { opacity:0.1; }
+
+        /* NAV */
+        nav {
+            position:fixed; top:0; width:100%; height:var(--nav-h);
+            background:var(--glass);
+            backdrop-filter:blur(20px); -webkit-backdrop-filter:blur(20px);
+            display:flex; justify-content:center; align-items:center;
+            border-bottom:1px solid var(--border);
+            z-index:1000;
+            box-shadow: 0 2px 30px -5px rgba(79,70,229,0.1);
+        }
+        .nav-content { width:92%; max-width:1200px; display:flex; justify-content:space-between; align-items:center; }
+        .logo {
+            font-size:1.6rem; font-weight:800; letter-spacing:-0.5px;
+            background:linear-gradient(135deg,var(--primary),var(--secondary));
+            -webkit-background-clip:text; -webkit-text-fill-color:transparent;
+            cursor:pointer; display:flex; align-items:center; gap:10px;
+            position:relative;
+        }
+        .logo-badge {
+            font-size:0.55rem; font-weight:700; letter-spacing:1.5px;
+            background:linear-gradient(135deg,var(--gold),#f97316);
+            -webkit-background-clip:text; -webkit-text-fill-color:transparent;
+            text-transform:uppercase; position:absolute; bottom:-10px; right:0;
+        }
+        .menu { display:flex; gap:8px; list-style:none; }
+        .menu-item {
+            cursor:pointer; font-weight:600; font-size:0.9rem;
+            color:var(--text-dim); padding:9px 18px; border-radius:30px;
+            transition:0.25s; border:1px solid transparent; letter-spacing:0.2px;
+        }
+        .menu-item:hover { background:rgba(79,70,229,0.08); color:var(--primary); }
+        .menu-item.active-menu {
+            background:linear-gradient(135deg,var(--primary),var(--secondary));
+            color:white; box-shadow:0 4px 18px var(--primary-glow);
+            border-color:transparent;
+        }
+        .nav-right { display:flex; align-items:center; gap:12px; }
+        .theme-toggle {
+            background:var(--card-bg); width:44px; height:44px; border-radius:50%;
+            display:flex; align-items:center; justify-content:center;
+            border:1px solid var(--border); cursor:pointer; box-shadow:var(--shadow);
+            color:var(--text-main); font-size:1.1rem; transition:0.2s;
+        }
+        .theme-toggle:hover { transform:rotate(15deg); border-color:var(--primary); }
+
+        .container { max-width:1200px; margin:calc(var(--nav-h) + 35px) auto 80px; padding:0 20px; position:relative; z-index:1; }
+
+        .section { display:none; opacity:0; transform:translateY(14px); transition:0.4s ease; }
+        .active { display:block; opacity:1; transform:translateY(0); }
+
+        /* HERO BANNER */
+        .hero-banner {
+            text-align:center; margin-bottom:60px;
+            padding:60px 30px 50px;
+            background:linear-gradient(135deg, rgba(79,70,229,0.06) 0%, rgba(139,92,246,0.06) 100%);
+            border-radius:32px;
+            border:1px solid var(--border);
+            position:relative; overflow:hidden;
+        }
+        .hero-banner::before {
+            content:''; position:absolute; inset:0;
+            background:radial-gradient(ellipse at 30% 50%, rgba(79,70,229,0.08) 0%, transparent 60%),
+                        radial-gradient(ellipse at 70% 50%, rgba(139,92,246,0.06) 0%, transparent 60%);
+        }
+        .hero-badge {
+            display:inline-flex; align-items:center; gap:8px;
+            background:linear-gradient(135deg,rgba(79,70,229,0.12),rgba(139,92,246,0.12));
+            border:1px solid rgba(79,70,229,0.25);
+            color:var(--primary); padding:6px 18px; border-radius:30px;
+            font-size:0.8rem; font-weight:700; letter-spacing:1px; text-transform:uppercase;
+            margin-bottom:20px;
+        }
+        .hero-title {
+            font-size:3.2rem; font-weight:800; margin-bottom:16px;
+            background:linear-gradient(135deg,#059669 0%,#d97706 50%,#0891b2 100%);
+            -webkit-background-clip:text; -webkit-text-fill-color:transparent;
+            line-height:1.1; letter-spacing:-1px;
+        }
+        .hero-sub { color:var(--text-dim); font-size:1.1rem; max-width:600px; margin:0 auto 30px; line-height:1.7; }
+        .hero-stats {
+            display:flex; justify-content:center; gap:40px; flex-wrap:wrap;
+        }
+        .stat-item { text-align:center; }
+        .stat-num { font-size:2rem; font-weight:800; color:var(--primary); font-family:'Space Mono',monospace; }
+        .stat-label { font-size:0.78rem; color:var(--text-dim); font-weight:600; letter-spacing:0.5px; text-transform:uppercase; }
+
+        /* CARDS */
+        .grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(290px,1fr)); gap:26px; }
+        .card {
+            background:var(--card-bg); border-radius:24px; padding:0;
+            border:1px solid var(--border); box-shadow:var(--shadow);
+            transition:0.3s; display:flex; flex-direction:column; overflow:hidden;
+            position:relative;
+        }
+        .card::after {
+            content:''; position:absolute; inset:0; border-radius:24px;
+            box-shadow:inset 0 0 0 1px rgba(255,255,255,0.5);
+            pointer-events:none;
+        }
+        .card:hover { transform:translateY(-6px); box-shadow:var(--shadow-lg); border-color:var(--primary); }
+        .card-img-wrap { position:relative; overflow:hidden; height:200px; }
+        .card-image { width:100%; height:100%; object-fit:cover; transition:0.5s; display:block; }
+        .card:hover .card-image { transform:scale(1.06); }
+        .card-tag {
+            position:absolute; top:14px; left:14px;
+            background:rgba(0,0,0,0.55); backdrop-filter:blur(8px);
+            color:white; padding:4px 12px; border-radius:20px; font-size:0.75rem; font-weight:700;
+        }
+        .card-info { flex-grow:1; display:flex; flex-direction:column; padding:22px 24px 24px; }
+        .card-info h3 { font-size:1.15rem; margin-bottom:8px; font-weight:700; line-height:1.3; }
+        .card-info p { color:var(--text-dim); font-size:0.93rem; line-height:1.6; margin-bottom:18px; flex-grow:1; }
+
+        /* KMZh */
+        .kmzh-container { margin-top:30px; }
+        .kmzh-table {
+            width:100%; border-collapse:collapse; margin-top:20px;
+            background:var(--card-bg); border-radius:16px; overflow:hidden;
+            box-shadow:var(--shadow); border:1px solid var(--border);
+        }
+        .kmzh-table th, .kmzh-table td {
+            padding:16px 20px; border:1px solid var(--border); text-align:left;
+            font-size:0.93rem; vertical-align:top; line-height:1.7;
+        }
+        .kmzh-table th {
+            background:linear-gradient(135deg,var(--primary),var(--secondary));
+            color:white; font-weight:700; font-size:0.85rem; text-transform:uppercase; letter-spacing:0.5px;
+        }
+        .kmzh-stage { font-weight:800; color:var(--primary); width:220px; background:rgba(79,70,229,0.03); }
+        .kmzh-card {
+            margin-bottom:80px; padding-bottom:50px;
+            border-bottom:2px solid var(--border);
+        }
+        .kmzh-card:last-child { border-bottom:none; }
+
+        /* GAME */
+        .game-card {
+            color:white; padding:32px; border-radius:24px; text-align:center;
+            position:relative; overflow:hidden; display:flex;
+            flex-direction:column; justify-content:center; align-items:center;
+            min-height:260px; border:1px solid rgba(255,255,255,0.15);
+        }
+        .game-card-img {
+            width:100%; height:180px; object-fit:cover; border-radius:16px;
+            margin-bottom:16px; display:block; box-shadow:0 8px 24px rgba(0,0,0,0.25);
+        }
+        .game-card-inner { position:relative; z-index:2; width:100%; }
+        .game-card h3 { font-size:1.35rem; font-weight:800; margin-bottom:6px; }
+        .game-card p { font-size:0.9rem; opacity:0.85; margin-bottom:10px; }
+        .game-area {
+            background:var(--card-bg); color:var(--text-main);
+            padding:22px; border-radius:16px; margin-top:16px;
+            width:100%; display:none; z-index:5;
+            box-shadow:0 10px 30px rgba(0,0,0,0.25); text-align:left;
+            border:1px solid var(--border);
+        }
+        .game-level-indicator {
+            text-align:center; font-size:0.8rem; font-weight:700;
+            text-transform:uppercase; letter-spacing:1px; color:var(--text-dim);
+            margin-bottom:12px; padding-bottom:8px; border-bottom:1px solid var(--border);
+        }
+        .game-btn {
+            position:relative; z-index:2; display:inline-flex; align-items:center; gap:8px;
+            margin-top:16px; background:white; color:var(--primary);
+            padding:12px 26px; border-radius:50px; border:none; cursor:pointer;
+            font-weight:800; font-size:0.95rem; transition:0.3s; box-shadow:0 4px 20px rgba(0,0,0,0.15);
+        }
+        .game-btn:hover { transform:scale(1.05); box-shadow:0 8px 30px rgba(255,255,255,0.3); }
+        .game-input {
+            width:100%; padding:12px 16px; border:2px solid var(--border);
+            border-radius:12px; margin:10px 0; font-size:1rem;
+            background:var(--bg); color:var(--text-main); transition:0.2s;
+        }
+        .game-input:focus { outline:none; border-color:var(--primary); }
+        .game-feedback { margin-top:12px; font-weight:700; min-height:26px; text-align:center; }
+        .success { color:#10b981; } .error { color:#ef4444; }
+
+        /* LESSON VIEW */
+        .content-block { font-size:1.08rem; line-height:1.85; color:var(--text-main); }
+        .content-block h2 { color:var(--primary); margin:40px 0 16px; font-size:1.9rem; font-weight:800; }
+        .content-block h3 { color:var(--text-main); margin:28px 0 12px; font-size:1.35rem; font-weight:700; border-bottom:2px solid var(--border); padding-bottom:8px; }
+        .content-block p { margin-bottom:16px; }
+        .content-block ul, .content-block ol { margin-left:28px; margin-bottom:22px; }
+        .content-block li { margin-bottom:9px; }
+        .important-box {
+            background:linear-gradient(135deg,rgba(79,70,229,0.06),rgba(139,92,246,0.06));
+            border-left:5px solid var(--primary); padding:24px 28px;
+            border-radius:0 18px 18px 0; margin:28px 0; font-style:italic;
+            box-shadow:4px 4px 20px rgba(79,70,229,0.05);
+        }
+
+        /* VIDEO SECTION */
+        .video-section { margin:40px 0; }
+        .video-section h3 { font-size:1.4rem; font-weight:800; margin-bottom:20px; display:flex; align-items:center; gap:10px; }
+        .video-embed {
+            width:100%; aspect-ratio:16/9; border-radius:20px; overflow:hidden;
+            box-shadow:var(--shadow-lg); border:1px solid var(--border);
+        }
+        .video-embed iframe { width:100%; height:100%; border:none; display:block; }
+
+        /* AUDIO */
+        .audio-section { margin:30px 0; }
+        .audio-section h3 { font-size:1.2rem; font-weight:800; margin-bottom:16px; display:flex; align-items:center; gap:8px; }
+        .audio-upload-area {
+            border:2px dashed var(--primary); border-radius:20px; padding:30px;
+            text-align:center; background:rgba(79,70,229,0.04);
+            cursor:pointer; transition:0.25s; position:relative; overflow:hidden;
+            margin-bottom:20px;
+        }
+        .audio-upload-area:hover { background:rgba(79,70,229,0.08); border-style:solid; }
+        .audio-upload-area input[type=file] { position:absolute; inset:0; opacity:0; cursor:pointer; }
+        .upload-icon { font-size:2.5rem; margin-bottom:10px; }
+        .upload-text { font-weight:700; color:var(--primary); font-size:1rem; }
+        .upload-sub { color:var(--text-dim); font-size:0.85rem; margin-top:5px; }
+        .audio-player-custom {
+            background:var(--card-bg); border:1px solid var(--border);
+            border-radius:20px; padding:20px 24px; display:flex; align-items:center;
+            gap:16px; box-shadow:var(--shadow); display:none;
+        }
+        .audio-player-custom.visible { display:flex; }
+        .apc-controls { display:flex; gap:10px; }
+        .apc-btn {
+            background:linear-gradient(135deg,var(--primary),var(--secondary));
+            color:white; border:none; width:48px; height:48px; border-radius:50%;
+            cursor:pointer; display:flex; align-items:center; justify-content:center;
+            transition:0.2s; box-shadow:0 4px 15px var(--primary-glow); font-size:1.1rem;
+        }
+        .apc-btn:hover { transform:scale(1.1); }
+        .apc-btn.stop { background:linear-gradient(135deg,#ef4444,#f97316); box-shadow:0 4px 15px rgba(239,68,68,0.35); }
+        .apc-info { flex-grow:1; }
+        .apc-name { font-weight:700; font-size:0.95rem; margin-bottom:4px; }
+        .apc-status { font-size:0.8rem; color:var(--text-dim); }
+        .apc-progress { flex-grow:1; }
+        .apc-bar-bg { height:6px; background:var(--border); border-radius:10px; overflow:hidden; margin-top:8px; }
+        .apc-bar-fill { height:100%; background:linear-gradient(90deg,var(--primary),var(--secondary)); border-radius:10px; width:0%; transition:width 0.3s; }
+        .apc-visualizer { display:flex; gap:3px; height:24px; align-items:center; }
+        .apc-bar-v { width:3px; background:var(--secondary); border-radius:3px; animation:none; }
+        .apc-playing .apc-bar-v { animation:soundWave 0.8s ease-in-out infinite; }
+        .apc-bar-v:nth-child(2){animation-delay:0.1s} .apc-bar-v:nth-child(3){animation-delay:0.2s}
+        .apc-bar-v:nth-child(4){animation-delay:0.3s} .apc-bar-v:nth-child(5){animation-delay:0.15s}
+        @keyframes soundWave {
+            0%,100%{height:4px;opacity:0.4;} 50%{height:22px;opacity:1;}
+        }
+
+        /* QUIZ */
+        .quiz-wrapper {
+            background:linear-gradient(135deg,rgba(79,70,229,0.03),rgba(139,92,246,0.03));
+            border-radius:28px; padding:40px; border:1px solid var(--border); margin-top:50px;
+        }
+        .question-block { margin-bottom:32px; padding-bottom:28px; border-bottom:1px solid var(--border); }
+        .question-block:last-child { border-bottom:none; }
+        .option-btn {
+            width:100%; padding:14px 22px; background:var(--card-bg);
+            border:2px solid var(--border); border-radius:14px; text-align:left;
+            cursor:pointer; margin-top:10px; transition:0.2s;
+            font-size:0.97rem; font-weight:500; color:var(--text-main);
+        }
+        .option-btn:hover { border-color:var(--primary); background:rgba(79,70,229,0.03); }
+        .option-btn.correct { background:#10b981; color:white; border-color:#10b981; }
+        .option-btn.wrong { background:#ef4444; color:white; border-color:#ef4444; }
+        .disabled { pointer-events:none; opacity:0.7; }
+
+        .back-btn {
+            display:inline-flex; align-items:center; gap:8px;
+            background:var(--card-bg); color:var(--text-main);
+            border:1px solid var(--border); padding:10px 22px;
+            border-radius:14px; cursor:pointer; font-weight:700;
+            margin-bottom:28px; transition:0.2s; box-shadow:var(--shadow);
+        }
+        .back-btn:hover { color:var(--primary); border-color:var(--primary); transform:translateX(-4px); }
+        .btn-action {
+            display:inline-flex; align-items:center; justify-content:center; gap:10px;
+            background:linear-gradient(135deg,var(--primary) 0%,var(--secondary) 100%);
+            color:white; padding:14px 28px; border-radius:14px; font-weight:700;
+            cursor:pointer; border:none; font-size:0.97rem; width:100%;
+            transition:0.3s; box-shadow:0 4px 20px var(--primary-glow);
+        }
+        .btn-action:hover { opacity:0.9; transform:translateY(-2px); box-shadow:0 8px 30px var(--primary-glow); }
+
+        /* SECTION TITLES */
+        .section-header { text-align:center; margin-bottom:55px; }
+        .section-header h1 {
+            font-size:2.7rem; font-weight:800; margin-bottom:14px; letter-spacing:-0.5px;
+            background:linear-gradient(135deg,var(--primary),var(--secondary));
+            -webkit-background-clip:text; -webkit-text-fill-color:transparent;
+        }
+        .section-header p { color:var(--text-dim); font-size:1.05rem; max-width:550px; margin:0 auto; line-height:1.7; }
+
+        /* PULSE DOT */
+        .pulse-dot {
+            width:10px; height:10px; border-radius:50%; background:var(--accent);
+            display:inline-block; animation:pulse 1.5s ease-in-out infinite;
+        }
+        @keyframes pulse { 0%,100%{transform:scale(1);opacity:1;} 50%{transform:scale(1.5);opacity:0.5;} }
+
+        /* PREMIUM BADGE */
+        .premium-badge {
+            display:inline-flex; align-items:center; gap:6px;
+            background:linear-gradient(135deg,#f59e0b,#f97316);
+            color:white; padding:3px 12px; border-radius:20px;
+            font-size:0.7rem; font-weight:800; text-transform:uppercase; letter-spacing:1px;
+        }
+
+        @media(max-width:768px){
+            .nav-content{width:95%;}
+            .menu{gap:5px;}
+            .menu-item{padding:7px 12px;font-size:0.82rem;}
+            .container{margin-top:calc(var(--nav-h)+20px);}
+            .hero-title{font-size:2.2rem;}
+            .hero-stats{gap:25px;}
+            .stat-num{font-size:1.5rem;}
+        }
+
+        /* ========== LANGUAGE SWITCHER ========== */
+        .lang-btn {
+            background:var(--card-bg); border:1px solid var(--border);
+            color:var(--text-main); padding:7px 14px; border-radius:20px;
+            cursor:pointer; font-weight:700; font-size:0.82rem;
+            transition:0.2s; display:flex; align-items:center; gap:5px;
+        }
+        .lang-btn:hover { border-color:var(--primary); color:var(--primary); }
+
+        /* ========== SEARCH BAR ========== */
+        .search-wrap {
+            position:relative; max-width:460px; margin:0 auto 36px;
+        }
+        .search-wrap input {
+            width:100%; padding:14px 20px 14px 48px;
+            border:1.5px solid var(--border); border-radius:16px;
+            background:var(--card-bg); color:var(--text-main);
+            font-size:0.97rem; font-family:'Sora',sans-serif;
+            outline:none; transition:0.25s; box-shadow:var(--shadow);
+        }
+        .search-wrap input:focus { border-color:var(--primary); }
+        .search-icon {
+            position:absolute; left:16px; top:50%; transform:translateY(-50%);
+            font-size:1.1rem; color:var(--text-dim); pointer-events:none;
+        }
+        .search-results-empty {
+            text-align:center; color:var(--text-dim); padding:40px;
+            font-size:1rem;
+        }
+
+        /* ========== PROGRESS DASHBOARD ========== */
+        .progress-dashboard {
+            background:var(--card-bg); border:1px solid var(--border);
+            border-radius:24px; padding:28px 32px; margin-bottom:36px;
+            box-shadow:var(--shadow);
+        }
+        .progress-dashboard h3 {
+            font-size:1.1rem; font-weight:800; margin-bottom:20px;
+            display:flex; align-items:center; gap:10px;
+        }
+        .progress-stats-row {
+            display:grid; grid-template-columns:repeat(auto-fit,minmax(120px,1fr));
+            gap:16px; margin-bottom:20px;
+        }
+        .progress-stat {
+            text-align:center; background:var(--bg);
+            border-radius:16px; padding:16px 12px; border:1px solid var(--border);
+        }
+        .progress-stat-num {
+            font-size:1.8rem; font-weight:800; color:var(--primary);
+            font-family:'Space Mono',monospace;
+        }
+        .progress-stat-label { font-size:0.75rem; color:var(--text-dim); font-weight:600; margin-top:4px; }
+        .progress-bar-wrap { margin-top:6px; }
+        .progress-bar-label {
+            display:flex; justify-content:space-between;
+            font-size:0.82rem; font-weight:600; color:var(--text-dim); margin-bottom:6px;
+        }
+        .progress-bar-bg {
+            height:10px; background:var(--border); border-radius:10px; overflow:hidden;
+        }
+        .progress-bar-fill {
+            height:100%; border-radius:10px;
+            background:linear-gradient(90deg,var(--primary),var(--secondary));
+            transition:width 0.8s ease;
+        }
+
+        /* ========== POMODORO TIMER ========== */
+        #pomodoro-widget {
+            position:fixed; bottom:104px; left:24px; z-index:9000;
+            background:var(--card-bg); border:1px solid var(--border);
+            border-radius:20px; padding:16px 20px; box-shadow:var(--shadow-lg);
+            min-width:200px; opacity:0; transform:translateY(10px) scale(0.95);
+            pointer-events:none; transition:0.3s;
+        }
+        #pomodoro-widget.open { opacity:1; transform:translateY(0) scale(1); pointer-events:all; }
+        .pomo-title { font-weight:800; font-size:0.85rem; margin-bottom:10px; display:flex; align-items:center; gap:8px; }
+        .pomo-mode-badge {
+            font-size:0.7rem; padding:2px 8px; border-radius:10px;
+            background:linear-gradient(135deg,var(--primary),var(--secondary));
+            color:white; font-weight:700;
+        }
+        .pomo-timer {
+            font-size:2.4rem; font-weight:800; text-align:center;
+            font-family:'Space Mono',monospace; color:var(--primary);
+            margin:8px 0;
+        }
+        .pomo-controls { display:flex; gap:8px; justify-content:center; margin-top:8px; }
+        .pomo-btn {
+            padding:7px 16px; border-radius:10px; border:none; cursor:pointer;
+            font-weight:700; font-size:0.82rem; transition:0.2s;
+        }
+        .pomo-btn.primary {
+            background:linear-gradient(135deg,var(--primary),var(--secondary));
+            color:white;
+        }
+        .pomo-btn.secondary {
+            background:var(--bg); color:var(--text-dim); border:1px solid var(--border);
+        }
+        .pomo-btn:hover { opacity:0.85; transform:scale(1.04); }
+        .pomo-sessions { text-align:center; font-size:0.78rem; color:var(--text-dim); margin-top:6px; }
+        #pomo-fab {
+            position:fixed; bottom:28px; left:24px; z-index:9001;
+            width:52px; height:52px; border-radius:50%;
+            background:var(--card-bg); border:1.5px solid var(--border);
+            cursor:pointer; display:flex; align-items:center; justify-content:center;
+            font-size:1.3rem; box-shadow:var(--shadow); transition:0.2s;
+        }
+        #pomo-fab:hover { border-color:var(--primary); transform:scale(1.08); }
+        #pomo-fab.running { border-color:var(--primary); background:linear-gradient(135deg,var(--primary),var(--secondary)); }
+
+        /* ========== BADGES / ACHIEVEMENTS ========== */
+        .badges-row {
+            display:flex; flex-wrap:wrap; gap:10px; margin-top:16px;
+        }
+        .badge-item {
+            display:flex; align-items:center; gap:8px;
+            background:var(--bg); border:1px solid var(--border);
+            border-radius:12px; padding:8px 14px; font-size:0.82rem; font-weight:700;
+            transition:0.25s;
+        }
+        .badge-item.earned {
+            background:linear-gradient(135deg,rgba(5,150,105,0.1),rgba(217,119,6,0.1));
+            border-color:var(--primary); color:var(--primary);
+        }
+        .badge-item.locked { opacity:0.4; filter:grayscale(1); }
+        .badge-icon { font-size:1.3rem; }
+
+        /* ========== BOOKMARK BUTTON ========== */
+        .bookmark-btn {
+            position:absolute; top:14px; right:14px; z-index:5;
+            background:rgba(0,0,0,0.45); backdrop-filter:blur(8px);
+            border:none; color:white; width:36px; height:36px;
+            border-radius:50%; cursor:pointer; font-size:1rem;
+            display:flex; align-items:center; justify-content:center; transition:0.2s;
+        }
+        .bookmark-btn:hover { transform:scale(1.15); }
+        .bookmark-btn.saved { background:rgba(245,158,11,0.9); }
+
+        /* ========== TEACHER PANEL ========== */
+        .teacher-panel {
+            background:var(--card-bg); border:2px solid var(--primary);
+            border-radius:24px; padding:32px; margin-bottom:30px;
+            box-shadow:var(--shadow-lg);
+        }
+        .teacher-panel h2 { font-size:1.4rem; font-weight:800; margin-bottom:24px; display:flex; align-items:center; gap:10px; }
+        .teacher-tabs { display:flex; gap:8px; margin-bottom:24px; flex-wrap:wrap; }
+        .teacher-tab {
+            padding:8px 18px; border-radius:20px; border:1.5px solid var(--border);
+            cursor:pointer; font-weight:700; font-size:0.85rem; color:var(--text-dim);
+            transition:0.2s; background:var(--bg);
+        }
+        .teacher-tab.active { background:linear-gradient(135deg,var(--primary),var(--secondary)); color:white; border-color:transparent; }
+        .teacher-tab-content { display:none; }
+        .teacher-tab-content.active { display:block; }
+        .student-table {
+            width:100%; border-collapse:collapse; margin-top:16px;
+        }
+        .student-table th {
+            background:linear-gradient(135deg,var(--primary),var(--secondary));
+            color:white; padding:12px 16px; text-align:left; font-size:0.82rem;
+            font-weight:700; text-transform:uppercase; letter-spacing:0.5px;
+        }
+        .student-table td {
+            padding:12px 16px; border-bottom:1px solid var(--border);
+            font-size:0.9rem; vertical-align:middle;
+        }
+        .student-table tr:last-child td { border-bottom:none; }
+        .student-table tr:hover td { background:var(--bg); }
+        .mini-progress {
+            height:8px; background:var(--border); border-radius:10px; overflow:hidden; width:80px; display:inline-block;
+        }
+        .mini-progress-fill {
+            height:100%; background:linear-gradient(90deg,var(--primary),var(--secondary)); border-radius:10px;
+        }
+        .teacher-input {
+            width:100%; padding:12px 16px; border:1.5px solid var(--border);
+            border-radius:12px; background:var(--bg); color:var(--text-main);
+            font-size:0.93rem; font-family:'Sora',sans-serif;
+            outline:none; margin-bottom:10px; transition:0.2s;
+        }
+        .teacher-input:focus { border-color:var(--primary); }
+        .teacher-btn {
+            padding:11px 22px; border-radius:12px; border:none; cursor:pointer;
+            font-weight:700; font-size:0.9rem; transition:0.2s;
+            background:linear-gradient(135deg,var(--primary),var(--secondary)); color:white;
+            box-shadow:0 4px 15px var(--primary-glow);
+        }
+        .teacher-btn:hover { opacity:0.88; transform:translateY(-1px); }
+        .teacher-btn.danger { background:linear-gradient(135deg,#dc2626,#f97316); box-shadow:none; }
+        .teacher-pin-form {
+            max-width:320px; margin:0 auto; text-align:center; padding:40px 20px;
+        }
+        .teacher-pin-form h3 { font-size:1.2rem; font-weight:800; margin-bottom:8px; }
+        .teacher-pin-form p { color:var(--text-dim); font-size:0.9rem; margin-bottom:20px; }
+        .pin-input {
+            width:100%; padding:14px; text-align:center; font-size:1.5rem;
+            font-family:'Space Mono',monospace; letter-spacing:8px;
+            border:2px solid var(--border); border-radius:14px;
+            background:var(--bg); color:var(--text-main); outline:none;
+            margin-bottom:14px; transition:0.2s;
+        }
+        .pin-input:focus { border-color:var(--primary); }
+        .pin-error { color:#ef4444; font-size:0.85rem; margin-top:8px; min-height:20px; }
+
+        /* ========== ZERE CHATBOT ========== */
+        #zere-fab {
+            position:fixed; bottom:28px; right:28px; z-index:9999;
+            width:62px; height:62px; border-radius:50%;
+            background:linear-gradient(135deg,var(--primary),var(--secondary));
+            border:none; cursor:pointer;
+            box-shadow:0 6px 30px var(--primary-glow), 0 0 0 0 rgba(5,150,105,0.4);
+            display:flex; align-items:center; justify-content:center;
+            font-size:1.6rem; transition:transform 0.25s, box-shadow 0.25s;
+            animation: zerePulse 2.5s ease-in-out infinite;
+        }
+        #zere-fab:hover { transform:scale(1.1); box-shadow:0 10px 40px var(--primary-glow); }
+        @keyframes zerePulse {
+            0%,100%{box-shadow:0 6px 30px var(--primary-glow), 0 0 0 0 rgba(5,150,105,0.35);}
+            50%{box-shadow:0 6px 30px var(--primary-glow), 0 0 0 12px rgba(5,150,105,0);}
+        }
+        .zere-tooltip {
+            position:absolute; bottom:72px; right:0;
+            background:var(--card-bg); color:var(--text-main);
+            border:1px solid var(--border); border-radius:12px;
+            padding:8px 14px; font-size:0.82rem; font-weight:700;
+            white-space:nowrap; box-shadow:var(--shadow);
+            opacity:0; transform:translateY(6px); pointer-events:none;
+            transition:0.2s;
+        }
+        #zere-fab:hover .zere-tooltip { opacity:1; transform:translateY(0); }
+
+        #zere-window {
+            position:fixed; bottom:102px; right:28px; z-index:9998;
+            width:380px; max-width:calc(100vw - 40px);
+            height:560px; max-height:calc(100vh - 130px);
+            background:var(--card-bg); border-radius:24px;
+            border:1px solid var(--border); box-shadow:var(--shadow-lg);
+            display:flex; flex-direction:column; overflow:hidden;
+            opacity:0; transform:translateY(20px) scale(0.95);
+            pointer-events:none;
+            transition:opacity 0.3s, transform 0.3s;
+        }
+        #zere-window.open {
+            opacity:1; transform:translateY(0) scale(1); pointer-events:all;
+        }
+        .zere-header {
+            background:linear-gradient(135deg,var(--primary),var(--secondary));
+            padding:16px 20px; display:flex; align-items:center; gap:12px; flex-shrink:0;
+        }
+        .zere-avatar {
+            width:42px; height:42px; border-radius:50%;
+            background:rgba(255,255,255,0.2);
+            display:flex; align-items:center; justify-content:center;
+            font-size:1.4rem; flex-shrink:0;
+        }
+        .zere-header-info { flex-grow:1; }
+        .zere-name { color:white; font-weight:800; font-size:1rem; }
+        .zere-status {
+            color:rgba(255,255,255,0.85); font-size:0.75rem;
+            display:flex; align-items:center; gap:5px;
+        }
+        .zere-online-dot {
+            width:7px; height:7px; border-radius:50%; background:#86efac;
+            animation:pulse 1.5s infinite;
+        }
+        .zere-close {
+            background:rgba(255,255,255,0.2); border:none; color:white;
+            width:32px; height:32px; border-radius:50%; cursor:pointer;
+            display:flex; align-items:center; justify-content:center;
+            font-size:1.1rem; transition:0.2s;
+        }
+        .zere-close:hover { background:rgba(255,255,255,0.35); }
+        .zere-msgs {
+            flex:1; overflow-y:auto; padding:18px 16px;
+            display:flex; flex-direction:column; gap:12px; scroll-behavior:smooth;
+        }
+        .zere-msgs::-webkit-scrollbar { width:4px; }
+        .zere-msgs::-webkit-scrollbar-thumb { background:var(--border); border-radius:10px; }
+        .zmsg {
+            display:flex; gap:8px; align-items:flex-end;
+            animation:zmsgIn 0.3s ease;
+        }
+        @keyframes zmsgIn {
+            from{opacity:0;transform:translateY(10px);}
+            to{opacity:1;transform:translateY(0);}
+        }
+        .zmsg.user { flex-direction:row-reverse; }
+        .zmsg-avatar {
+            width:28px; height:28px; border-radius:50%;
+            background:linear-gradient(135deg,var(--primary),var(--secondary));
+            display:flex; align-items:center; justify-content:center;
+            font-size:0.85rem; flex-shrink:0;
+        }
+        .zmsg.user .zmsg-avatar { background:linear-gradient(135deg,var(--accent),#7c3aed); }
+        .zmsg-bubble {
+            max-width:78%; padding:12px 16px; border-radius:18px;
+            font-size:0.9rem; line-height:1.55; color:var(--text-main);
+            background:var(--bg); border:1px solid var(--border);
+            border-bottom-left-radius:4px; white-space:pre-wrap;
+        }
+        .zmsg.user .zmsg-bubble {
+            background:linear-gradient(135deg,var(--primary),var(--secondary));
+            color:white; border:none; border-bottom-right-radius:4px;
+            border-bottom-left-radius:18px;
+        }
+        .zere-typing {
+            display:flex; gap:5px; align-items:center;
+            padding:10px 14px; background:var(--bg); border:1px solid var(--border);
+            border-radius:18px; border-bottom-left-radius:4px; width:fit-content;
+        }
+        .zere-typing span {
+            width:7px; height:7px; border-radius:50%; background:var(--primary);
+            animation:typingDot 1.2s ease-in-out infinite;
+        }
+        .zere-typing span:nth-child(2){animation-delay:0.2s}
+        .zere-typing span:nth-child(3){animation-delay:0.4s}
+        @keyframes typingDot {
+            0%,60%,100%{transform:translateY(0);opacity:0.4;}
+            30%{transform:translateY(-6px);opacity:1;}
+        }
+        .zere-quickbtns {
+            padding:8px 14px; display:flex; gap:6px; flex-wrap:wrap;
+            border-top:1px solid var(--border); background:var(--bg); flex-shrink:0;
+        }
+        .zere-qbtn {
+            padding:5px 12px; border-radius:20px; border:1px solid var(--border);
+            background:var(--card-bg); color:var(--text-dim);
+            font-size:0.77rem; font-weight:600; cursor:pointer; transition:0.2s;
+        }
+        .zere-qbtn:hover { border-color:var(--primary); color:var(--primary); }
+        .zere-input-row {
+            display:flex; gap:8px; padding:12px 14px;
+            border-top:1px solid var(--border); flex-shrink:0; background:var(--card-bg);
+        }
+        #zere-input {
+            flex:1; padding:11px 16px; border-radius:14px;
+            border:1.5px solid var(--border); background:var(--bg);
+            color:var(--text-main); font-size:0.9rem; font-family:'Sora',sans-serif;
+            outline:none; transition:0.2s;
+        }
+        #zere-input:focus { border-color:var(--primary); }
+        #zere-send {
+            background:linear-gradient(135deg,var(--primary),var(--secondary));
+            border:none; color:white; width:44px; height:44px;
+            border-radius:12px; cursor:pointer; display:flex;
+            align-items:center; justify-content:center; font-size:1.1rem;
+            transition:0.2s; flex-shrink:0;
+        }
+        #zere-send:hover { opacity:0.85; transform:scale(1.05); }
+        #zere-send:disabled { opacity:0.4; cursor:not-allowed; transform:none; }
+    </style>
+</head>
+<body>
+
+<!-- BG ORBS -->
+<div class="bg-orb bg-orb-1"></div>
+<div class="bg-orb bg-orb-2"></div>
+<div class="bg-orb bg-orb-3"></div>
+
+<nav>
+    <div class="nav-content">
+        <div class="logo" onclick="showSection('lessons-grid-view')">
+            EDU.SMART
+            <span class="logo-badge">Elite ★</span>
+        </div>
+        <ul class="menu">
+            <li id="menu-lessons" class="menu-item active-menu" onclick="showSection('lessons-grid-view')" data-kk="📚 Сабақтар" data-ru="📚 Уроки">📚 Сабақтар</li>
+            <li id="menu-kmzh" class="menu-item" onclick="showSection('kmzh-section')" data-kk="📋 ҚМЖ Қоры" data-ru="📋 КМЖ База">📋 ҚМЖ Қоры</li>
+            <li id="menu-gaming" class="menu-item" onclick="showSection('gaming-section')" data-kk="🎮 Gaming" data-ru="🎮 Игры">🎮 Gaming</li>
+            <li id="menu-teacher" class="menu-item" onclick="showSection('teacher-section')" data-kk="👨‍🏫 Мұғалім" data-ru="👨‍🏫 Учитель">👨‍🏫 Мұғалім</li>
+        </ul>
+        <div class="nav-right">
+            <button class="lang-btn" onclick="toggleLang()" id="lang-toggle-btn">🌐 РУС</button>
+            <span class="premium-badge">⭐ Premium</span>
+            <div class="theme-toggle" onclick="toggleDarkMode()">🌓</div>
+        </div>
+    </div>
+</nav>
+
+<div class="container">
+
+    <!-- 1. САБАҚТАР ТІЗІМІ -->
+    <section id="lessons-grid-view" class="section active">
+        <div class="hero-banner">
+            <div class="hero-badge"><span class="pulse-dot"></span> <span data-kk="Жаңартылған 2024 • Premium" data-ru="Обновлено 2024 • Premium">Жаңартылған 2024 • Premium</span></div>
+            <h1 class="hero-title" data-kk="Информатика Әлемі" data-ru="Мир Информатики">Информатика Әлемі</h1>
+            <p class="hero-sub" data-kk="5-сынып оқушыларына арналған интерактивті оқу платформасы. Видео-сабақтар, ойындар, тесттер және тереңдетілген ҚМЖ жоспарлары бір жерде." data-ru="Интерактивная учебная платформа для учеников 5 класса. Видеоуроки, игры, тесты и планы уроков в одном месте.">5-сынып оқушыларына арналған интерактивті оқу платформасы. Видео-сабақтар, ойындар, тесттер және тереңдетілген ҚМЖ жоспарлары бір жерде.</p>
+            <div class="hero-stats">
+                <div class="stat-item"><div class="stat-num">4</div><div class="stat-label" data-kk="Тақырып" data-ru="Тема">Тақырып</div></div>
+                <div class="stat-item"><div class="stat-num">7</div><div class="stat-label" data-kk="Ойын" data-ru="Игра">Ойын</div></div>
+                <div class="stat-item"><div class="stat-num">12+</div><div class="stat-label" data-kk="Тест сұрақ" data-ru="Вопросов">Тест сұрақ</div></div>
+                <div class="stat-item"><div class="stat-num">4</div><div class="stat-label" data-kk="Видео" data-ru="Видео">Видео</div></div>
+            </div>
+        </div>
+
+        <!-- PROGRESS DASHBOARD -->
+        <div class="progress-dashboard" id="progress-dashboard">
+            <h3>📊 <span data-kk="Менің прогресім" data-ru="Мой прогресс">Менің прогресім</span></h3>
+            <div class="progress-stats-row">
+                <div class="progress-stat">
+                    <div class="progress-stat-num" id="stat-lessons-done">0</div>
+                    <div class="progress-stat-label" data-kk="Аяқталған сабақ" data-ru="Урок завершён">Аяқталған сабақ</div>
+                </div>
+                <div class="progress-stat">
+                    <div class="progress-stat-num" id="stat-tests-done">0</div>
+                    <div class="progress-stat-label" data-kk="Өткен тест" data-ru="Тестов пройдено">Өткен тест</div>
+                </div>
+                <div class="progress-stat">
+                    <div class="progress-stat-num" id="stat-score">0</div>
+                    <div class="progress-stat-label" data-kk="Жинаған ұпай" data-ru="Набрано очков">Жинаған ұпай</div>
+                </div>
+                <div class="progress-stat">
+                    <div class="progress-stat-num" id="stat-bookmarks">0</div>
+                    <div class="progress-stat-label" data-kk="Бетбелгі" data-ru="Закладка">Бетбелгі</div>
+                </div>
+            </div>
+            <div class="progress-bar-wrap">
+                <div class="progress-bar-label">
+                    <span data-kk="Жалпы прогресс" data-ru="Общий прогресс">Жалпы прогресс</span>
+                    <span id="progress-pct">0%</span>
+                </div>
+                <div class="progress-bar-bg"><div class="progress-bar-fill" id="progress-fill" style="width:0%"></div></div>
+            </div>
+            <!-- BADGES -->
+            <div style="margin-top:18px;">
+                <div style="font-size:0.85rem;font-weight:800;margin-bottom:10px;" data-kk="🏅 Жетістіктер" data-ru="🏅 Достижения">🏅 Жетістіктер</div>
+                <div class="badges-row" id="badges-container"></div>
+            </div>
+        </div>
+
+        <!-- SEARCH -->
+        <div class="search-wrap">
+            <span class="search-icon">🔍</span>
+            <input type="text" id="search-input" placeholder="Сабақ іздеу..." oninput="filterLessons(this.value)" data-kk-placeholder="Сабақ іздеу..." data-ru-placeholder="Поиск урока..." />
+        </div>
+
+        <div class="grid" id="main-grid"></div>
+    </section>
+
+    <!-- 2. ҚМЖ ҚОРЫ -->
+    <section id="kmzh-section" class="section">
+        <div class="section-header">
+            <h1>Кеңейтілген ҚМЖ Қоры</h1>
+            <p>Мұғалімдер үшін толық дайындалған, барлық тапсырмалары мен бағалау өлшемдері бар кешенді сабақ жоспарлары.</p>
+        </div>
+        <div id="kmzh-list" class="kmzh-container"></div>
+    </section>
+
+    <!-- 3. GAMING -->
+    <section id="gaming-section" class="section">
+        <div class="section-header">
+            <h1>Ойын арқылы үйрен!</h1>
+            <p>Информатика білімін ойын түрінде тексер. 7 интерактивті ойын, 3 деңгейден тұрады.</p>
+        </div>
+        <div class="grid" id="games-grid"></div>
+    </section>
+
+    <!-- 4. САБАҚТЫҢ ТОЛЫҚ МАЗМҰНЫ -->
+    <section id="single-lesson-view" class="section">
+        <button class="back-btn" onclick="showSection('lessons-grid-view')">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+            <span data-kk="Тізімге қайту" data-ru="Назад к списку">Тізімге қайту</span>
+        </button>
+        <div id="lesson-view-container" style="background:var(--card-bg);border-radius:30px;padding:45px;border:1px solid var(--border);box-shadow:var(--shadow);"></div>
+    </section>
+
+    <!-- 5. МҰҒАЛІМ ПАНЕЛІ -->
+    <section id="teacher-section" class="section">
+        <div class="section-header">
+            <h1 data-kk="👨‍🏫 Мұғалім / Ата-ана Панелі" data-ru="👨‍🏫 Панель Учителя / Родителя">👨‍🏫 Мұғалім / Ата-ана Панелі</h1>
+            <p data-kk="Оқушылардың прогресін бақылаңыз, нәтижелерді талдаңыз" data-ru="Отслеживайте прогресс учеников, анализируйте результаты">Оқушылардың прогресін бақылаңыз, нәтижелерді талдаңыз</p>
+        </div>
+        <div id="teacher-pin-screen">
+            <div class="teacher-pin-form">
+                <h3 data-kk="🔒 PIN-код еңгізіңіз" data-ru="🔒 Введите PIN-код">🔒 PIN-код еңгізіңіз</h3>
+                <p data-kk="Мұғалім панеліне кіру үшін PIN-кодты еңгізіңіз. Әдепкі: 1234" data-ru="Введите PIN для входа в панель учителя. По умолчанию: 1234">Мұғалім панеліне кіру үшін PIN-кодты еңгізіңіз. Әдепкі: 1234</p>
+                <input class="pin-input" type="password" id="teacher-pin-input" maxlength="4" placeholder="••••" oninput="if(this.value.length===4)checkTeacherPin()" />
+                <div class="pin-error" id="pin-error"></div>
+                <button class="teacher-btn" onclick="checkTeacherPin()" style="width:100%;margin-top:10px;" data-kk="Кіру" data-ru="Войти">Кіру</button>
+            </div>
+        </div>
+        <div id="teacher-main" style="display:none;">
+            <div class="teacher-panel">
+                <h2>📊 <span data-kk="Басқару Панелі" data-ru="Панель управления">Басқару Панелі</span>
+                    <button class="teacher-btn danger" style="margin-left:auto;font-size:0.78rem;padding:7px 14px;" onclick="logoutTeacher()" data-kk="Шығу" data-ru="Выйти">Шығу</button>
+                </h2>
+                <div class="teacher-tabs">
+                    <div class="teacher-tab active" onclick="switchTeacherTab('overview')" data-kk="📈 Шолу" data-ru="📈 Обзор">📈 Шолу</div>
+                    <div class="teacher-tab" onclick="switchTeacherTab('students')" data-kk="👦 Оқушылар" data-ru="👦 Ученики">👦 Оқушылар</div>
+                    <div class="teacher-tab" onclick="switchTeacherTab('settings')" data-kk="⚙️ Баптаулар" data-ru="⚙️ Настройки">⚙️ Баптаулар</div>
+                </div>
+
+                <!-- OVERVIEW TAB -->
+                <div class="teacher-tab-content active" id="tab-overview">
+                    <div class="progress-stats-row" id="teacher-overview-stats"></div>
+                    <div style="margin-top:20px;">
+                        <h3 style="font-size:1rem;font-weight:800;margin-bottom:14px;" data-kk="📋 Тіркелген оқушылар" data-ru="📋 Зарегистрированные ученики">📋 Тіркелген оқушылар</h3>
+                        <table class="student-table" id="teacher-student-table">
+                            <thead><tr>
+                                <th data-kk="Аты" data-ru="Имя">Аты</th>
+                                <th data-kk="Сабақ" data-ru="Уроков">Сабақ</th>
+                                <th data-kk="Ұпай" data-ru="Очки">Ұпай</th>
+                                <th data-kk="Прогресс" data-ru="Прогресс">Прогресс</th>
+                                <th data-kk="Жетістік" data-ru="Достиж.">Жетістік</th>
+                            </tr></thead>
+                            <tbody id="student-tbody"></tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- STUDENTS TAB -->
+                <div class="teacher-tab-content" id="tab-students">
+                    <h3 style="font-size:1rem;font-weight:800;margin-bottom:16px;" data-kk="➕ Жаңа оқушы қосу" data-ru="➕ Добавить ученика">➕ Жаңа оқушы қосу</h3>
+                    <input class="teacher-input" id="new-student-name" placeholder="Оқушының аты-жөні..." data-kk-placeholder="Оқушының аты-жөні..." data-ru-placeholder="ФИО ученика..." />
+                    <input class="teacher-input" id="new-student-class" placeholder="Сынып (мысалы: 5A)" data-kk-placeholder="Сынып (мысалы: 5A)" data-ru-placeholder="Класс (напр.: 5A)" />
+                    <button class="teacher-btn" onclick="addStudent()" data-kk="Қосу" data-ru="Добавить">Қосу</button>
+                    <div style="margin-top:20px;" id="students-manage-list"></div>
+                </div>
+
+                <!-- SETTINGS TAB -->
+                <div class="teacher-tab-content" id="tab-settings">
+                    <h3 style="font-size:1rem;font-weight:800;margin-bottom:16px;" data-kk="🔑 PIN-кодты өзгерту" data-ru="🔑 Изменить PIN-код">🔑 PIN-кодты өзгерту</h3>
+                    <input class="teacher-input" type="password" id="new-pin-input" maxlength="4" placeholder="Жаңа 4 сандық PIN" data-kk-placeholder="Жаңа 4 сандық PIN" data-ru-placeholder="Новый 4-значный PIN" style="max-width:200px;" />
+                    <button class="teacher-btn" onclick="changePin()" data-kk="Сақтау" data-ru="Сохранить">Сақтау</button>
+                    <hr style="border:1px solid var(--border);margin:24px 0;">
+                    <h3 style="font-size:1rem;font-weight:800;margin-bottom:12px;" data-kk="🗑️ Деректерді тазалау" data-ru="🗑️ Очистить данные">🗑️ Деректерді тазалау</h3>
+                    <p style="color:var(--text-dim);font-size:0.9rem;margin-bottom:12px;" data-kk="Барлық оқушылардың прогресін тазалайды" data-ru="Сбрасывает прогресс всех учеников">Барлық оқушылардың прогресін тазалайды</p>
+                    <button class="teacher-btn danger" onclick="clearAllData()" data-kk="Барлығын тазалау" data-ru="Очистить всё">Барлығын тазалау</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+</div>
+
+<!-- POMODORO FAB -->
+<button id="pomo-fab" onclick="pomodoroToggle()" title="Помодоро таймер">⏱️</button>
+<div id="pomodoro-widget">
+    <div class="pomo-title">⏱️ Помодоро <span class="pomo-mode-badge" id="pomo-mode-badge">Жұмыс</span></div>
+    <div class="pomo-timer" id="pomo-timer">25:00</div>
+    <div class="pomo-controls">
+        <button class="pomo-btn primary" id="pomo-start-btn" onclick="pomodoroStartStop()">▶ Бастау</button>
+        <button class="pomo-btn secondary" onclick="pomodoroReset()">↺</button>
+    </div>
+    <div class="pomo-sessions" id="pomo-sessions">🍅 0 сессия аяқталды</div>
+</div>
+
+<script>
+// =========================================
+// DATABASE
+// =========================================
+const lessonsData = [
+    {
+        id:1,
+        title:"Қауіпсіздік ережелері мен эргономика",
+        shortDesc:"Компьютерлік сыныптағы қауіпсіздік және денсаулықты сақтау. Электр тоғынан сақтану, дұрыс отыру, көзге арналған жаттығулар.",
+        image:"https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=1200&q=80",
+        tag:"Тақырып 1",
+        youtubeId:"hNO0Y7KiwkQ",
+        content:`
+            <h2>1. Техникалық қауіпсіздік ережелері</h2>
+            <p>Компьютерлік сыныпта жұмыс істегенде электр тоғымен зақымдану, өрт шығу, техниканы бүлдіру сияқты қауіптер бар. Осы қауіптердің алдын алу үшін бірқатар ережелерді қатаң сақтау міндетті.</p>
+            <ul>
+                <li>Сымдарға, розеткаларға, штепсельдің айырына тиіспеңіз — электр тоғы өте қауіпті.</li>
+                <li>Дымқыл қолмен компьютерді қоспаңыз — электр жарақаты алуыңыз мүмкін.</li>
+                <li>Сыныпта тамақ ішпеңіз — техникаға зиян тиеді.</li>
+                <li>Күйік немесе тас-темір иісі шықса, дереу мұғалімге хабарлаңыз.</li>
+                <li>Мұғалімнің рұқсатынсыз компьютерді өшіріп-қоспаңыз.</li>
+                <li>Компьютерді зорлықпен баспаңыз, техникаға мұқият болыңыз.</li>
+            </ul>
+            <div class="important-box"><strong>🔌 Электр тоғы:</strong> Кернеуі 220 В болатын тоқ адамды ауыр жарақаттайды немесе өлімге дейін апарады. Сымдарға ешқашан тиіспеңіз!</div>
+
+            <h3>2. Эргономика — денсаулық ғылымы</h3>
+            <p><strong>Эргономика</strong> — адамның жұмыс орнын оның физиологиялық және психологиялық ерекшеліктеріне сай ыңғайлы, тиімді және қауіпсіз етіп ұйымдастыру туралы ғылым. Бұл ғылым компьютерде ұзақ отыруға байланысты денсаулыққа келетін зиянды азайтуды мақсат тұтады.</p>
+            <ul>
+                <li><strong>Арқаңызды тік ұстаңыз</strong> — омыртқаңыз зардап шекпесін.</li>
+                <li><strong>Аяқтарыңыз еденге тиуі тиіс</strong> — орындықты тиісті биіктікке реттеңіз.</li>
+                <li><strong>Монитор мен көздің арақашықтығы 50–70 см</strong> болуы керек.</li>
+                <li><strong>Монитор деңгейі</strong> — экранның жоғарғы жиегі көз деңгейінде болуы тиіс.</li>
+                <li><strong>Жарық</strong> — мониторға сырттан жарық түспесін; шам артынан немесе бүйірден жарықтандырыңыз.</li>
+            </ul>
+
+            <h3>3. Демалыс және көзге арналған жаттығулар</h3>
+            <p>Компьютер алдында ұзақ отыру көздің шаршауына, бас ауруына және омыртқа ауруына әкеледі. Мамандар келесі ережені ұсынады:</p>
+            <ul>
+                <li><strong>20-20-20 ережесі:</strong> Әр 20 минут сайын 20 секунд бойы 20 метр қашықтыққа қараңыз.</li>
+                <li>Мойын мен иықты айналдырыңыз — бұлшықеттегі кернеуді алыңыз.</li>
+                <li>Алақандарыңызды ысқылап, жылы алақандарды жабық көздеріңізге қойыңыз.</li>
+                <li>Мектеп кезінде компьютер алдында 45 минуттан артық болмаңыз.</li>
+            </ul>
+            <div class="important-box"><strong>💡 Есте сақтаңыз:</strong> Компьютер — пайдалы құрал, бірақ оны дұрыс пайдалану — денсаулықтың кепілі!</div>
+        `,
+        quiz:[
+            {q:"Монитордан қанша қашықтықта отыру керек?", options:["20-30 см","50-70 см","100-120 см"], correct:1},
+            {q:"Компьютер алдында арқаны қалай ұстау керек?", options:["Жантаю керек","Тік ұстау керек","Еңкейіп отыру керек"], correct:1},
+            {q:"Дымқыл қолмен компьютерді қосуға бола ма?", options:["Болады","Мұғалім рұқсат етсе","Жоқ, болмайды"], correct:2}
+        ],
+        kmzh:{
+            target:"5.1.1.1 — Компьютерлік сыныпта жұмыс істеу кезіндегі қауіпсіздік техникасы ережелерін түсіндіру; Эргономика негіздерін сақтау дағдыларын қалыптастыру; Электр тоғынан сақтану, өрт қауіпсіздігі мен жұмыс орнын дұрыс ұйымдастыру мәселелерін меңгеру.",
+            resources:"Компьютерлік сынып, интерактивті тақта, презентация (15 слайд), ҚТ журналы, дене жаттығуларына арналған аудио, эргономикалық плакат, флешкарточкалар.",
+            plan:[
+                {stage:"Сабақтың басы (0–10 мин)", activity:`<b>Ұйымдастыру кезеңі (2 мин):</b> Оқушылармен амандасу, санаға қатысуды тіркеу, кезекші баяндамасы.<br><br>
+<b>Психологиялық ахуал — 'Шаттық шеңбері' (3 мин):</b> Оқушылар шеңбер құрып, бір-біріне жылы тілектер айтады. Оң ахуал орнатылады.<br><br>
+<b>Миға шабуыл (5 мин):</b> Тақтаға "Компьютер бізге дос па, әлде қас па?" деген сұрақ жазылады. Оқушылар пікірлерін білдіреді. Мұғалім жауаптарды тіркеп, сабақ тақырыбын жариялайды.<br><br>
+<b>Сабақтың мақсаты мен міндеттері хабарланады.</b>`},
+                {stage:"Сабақтың ортасы (10–30 мин)", activity:`<b>Теориялық блок — презентация (12 мин):</b><br>
+• Электр тоғынан сақтану ережелері (мысалдармен)<br>
+• Өрт қауіпсіздігі және төтенше жағдайдағы іс-әрекет<br>
+• Эргономика ұғымы: тарихы, маңыздылығы<br>
+• Дұрыс отыру қалпын анықтайтын схема<br><br>
+<b>Көрсетілім (5 мин):</b> Мұғалім тақта алдында дұрыс және бұрыс отыру формаларын демонстрациялайды. Оқушылар қателерді тауып, атайды.<br><br>
+<b>Сергіту сәті — 'Эргономикалық дене жаттығулары' (3 мин):</b> Оқушылар орнынан тұрып, мойын, иық, білек жаттығуларын орындайды. Аудио музыкамен жүргізіледі.`},
+                {stage:"Тәжірибелік жұмыс (30–40 мин)", activity:`<b>Жеке практикалық жұмыс (7 мин):</b><br>
+• Оқушылар компьютерге отырып, монитордың орналасуын, орындықтың биіктігін, пернетақтаның қашықтығын өз бойларына қарай реттейді.<br>
+• Мұғалім жүріп, орындалуды тексереді.<br><br>
+<b>Жұптық тапсырма (3 мин):</b> Берілген карточкадағы суреттерде қате эргономикалық жағдайларды тауып, белгілейді және жұбына түсіндіреді.`},
+                {stage:"Сабақтың соңы (40–45 мин)", activity:`<b>Формативті бағалау — Дескриптор бойынша (3 мин):</b><br>
+Дескриптор: (1) Қауіпсіздік ережелерін атайды; (2) Эргономика ұғымын түсіндіреді; (3) Дұрыс отыру қалпын демонстрациялайды.<br><br>
+<b>Кері байланыс — '3-2-1' әдісі (2 мин):</b><br>
+• 3 — сабақтан білген маңызды мәлімет<br>
+• 2 — қызықты болған 2 нәрсе<br>
+• 1 — қиындық тудырған 1 сұрақ<br><br>
+<b>Үй тапсырмасы:</b> Үйдегі компьютер орнын эргономика талаптарына сай бағалау және фотоға түсіру.`}
+            ]
+        }
+    },
+    {
+        id:2,
+        title:"Ақпарат және оның түрлері",
+        shortDesc:"Ақпарат дегеніміз не? Сезім мүшелері арқылы ақпарат алу. Ақпараттың түрлері мен ұсыну формалары.",
+        image:"https://images.unsplash.com/photo-1546410531-bb4caa6b424d?auto=format&fit=crop&w=1200&q=80",
+        tag:"Тақырып 2",
+        youtubeId:"2a6bgp8sGYA",
+        content:`
+            <h2>1. Ақпарат деген не?</h2>
+            <p>Ақпарат (латынша <em>informatio</em> — хабарлама, түсіндіру) — адамның қоршаған ортадан сезім мүшелері немесе арнайы техникалық құралдар арқылы алатын мәліметтер жиынтығы. Кез-келген сіз білетін нәрсе, кез-келген хабар немесе деректер — ақпарат болып табылады.</p>
+            <div class="important-box"><strong>Анықтама:</strong> Ақпарат — адамға немесе техникалық жүйеге берілетін, маңыздылығы бар кез-келген мәлімет, хабар немесе таным.</div>
+
+            <h3>2. Ақпараттың сезім мүшелері бойынша түрлері</h3>
+            <p>Адам ақпаратты бес сезім мүшесі арқылы қабылдайды. Ғалымдар адамның ақпараттың 80% астамын <strong>көру</strong> арқылы алатынын анықтаған.</p>
+            <ul>
+                <li><strong>🎓 Визуалды (Көру):</strong> Кітап оқу, сурет қарау, кино көру, жол белгілерін байқау. Бұл ең негізгі ақпарат алу жолы.</li>
+                <li><strong>🔊 Аудиалды (Есту):</strong> Мұғалімді тыңдау, музыка тыңдау, хабарландырулар, телефон арқылы сөйлесу.</li>
+                <li><strong>👃 Иіскеу:</strong> Гүлдің иісі, тамақтың иісі, өрт иісі (қауіп туралы ескерту береді).</li>
+                <li><strong>👅 Дәм сезу:</strong> Тамақтың тәтті, ащы, қышқыл немесе тұзды екенін анықтау.</li>
+                <li><strong>✋ Тактильді (Сипап сезу):</strong> Заттың жылы-суық, жұмсақ-қатты, тегіс-кедір-бұдыр екенін сезу.</li>
+            </ul>
+
+            <h3>3. Ақпараттың ұсыну формалары (компьютерде)</h3>
+            <p>Компьютерде ақпарат әртүрлі формада ұсынылады:</p>
+            <ul>
+                <li><strong>Мәтіндік:</strong> кітаптар, хаттар, мақалалар (.doc, .txt файлдары)</li>
+                <li><strong>Графикалық:</strong> суреттер, диаграммалар, схемалар (.jpg, .png, .svg файлдары)</li>
+                <li><strong>Дыбыстық:</strong> музыка, аудиокітаптар, дыбыстық хабарламалар (.mp3, .wav файлдары)</li>
+                <li><strong>Бейнелік:</strong> фильмдер, анимациялар, видеосабақтар (.mp4, .avi файлдары)</li>
+                <li><strong>Сандық:</strong> статистикалық деректер, кестелер (.xls, .csv файлдары)</li>
+            </ul>
+
+            <h3>4. Ақпараттың қасиеттері</h3>
+            <p>Жақсы ақпарат мынадай қасиеттерге ие болуы тиіс:</p>
+            <ul>
+                <li><strong>Дұрыстық (Дәлдік):</strong> Ақпарат шындыққа сәйкес болуы керек.</li>
+                <li><strong>Толықтық:</strong> Тапсырмаңызды шешуге жеткілікті мәліметтер болуы керек.</li>
+                <li><strong>Өзектілік:</strong> Ақпарат ескірмеген, уақытылы болуы тиіс.</li>
+                <li><strong>Түсініктілік:</strong> Ақпарат оны алатын адамға түсінікті болуы тиіс.</li>
+            </ul>
+        `,
+        quiz:[
+            {q:"Адам ақпаратты көбінесе қай сезім мүшесі арқылы алады?", options:["Құлақ","Көз","Мұрын"], correct:1},
+            {q:"Кітаптағы мәтін ақпараттың қай түріне жатады?", options:["Дыбыстық","Графикалық","Мәтіндік"], correct:2},
+            {q:"Музыка тыңдау — бұл ақпараттың қай түрі?", options:["Визуалды","Аудиалды","Тактильді"], correct:1}
+        ],
+        kmzh:{
+            target:"5.2.1.1 — Ақпаратты сезім мүшелері арқылы қабылдау түрлерін (көру, есту, иіскеу, дәм сезу, сипап сезу) сипаттау; Ақпараттың ұсыну формаларын (мәтін, графика, дыбыс, бейне, сан) ажырату; Ақпараттың негізгі қасиеттерін (дұрыстық, толықтық, өзектілік) атап сипаттау.",
+            resources:"Түрлі заттар (гүл, лимон, жұмыр тас, қоңырау), суреттер жинағы, жұмыс дәптері, үлестірме карточкалар (сезім мүшелері сүлбесі), компьютер, проектор.",
+            plan:[
+                {stage:"Қызығушылықты ояту (0–7 мин)", activity:`<b>Психологиялық ахуал — 'Тілек шамы' (2 мин):</b> Жасанды шам жандырылады. Оқушылар бір-біріне жақсы тілек тіледі.<br><br>
+<b>Ойын — 'Қара жәшік' (5 мин):</b> Ішінде заттар жасырылған жәшік ұсынылады. Бірнеше оқушы затты қолымен сипап танып, немесе иіскеп анықтайды. Осы арқылы сабақ тақырыбына органикалық өту жасалады: "Сіздер қандай сезім мүшесін пайдаландыңыздар? Нені білдіңіздер?"<br><br>
+<b>Мақсат:</b> Оқушыларда қызығушылық ояту және сабақ тақырыбымен байланыс орнату.`},
+                {stage:"Жаңа білім (7–25 мин)", activity:`<b>Түсіндіру блогы — 'Ақпарат ағашы' (10 мин):</b><br>
+Тақтада үлкен ағаш сызбасы. Тамыры — 'Ақпарат', бұтақтары — 5 сезім мүшесі, жапырақтары — мысалдар. Мұғалім түсіндіреді, оқушылар жапырақтарды толтырады.<br><br>
+<b>Сұрақ-жауап — Проблемалық ойлау (5 мин):</b> "Неліктен адамдар ең көп ақпаратты көру арқылы алады?" — дискуссия. Ғылыми факт: адам миының 50%-дан астамы визуалды ақпаратты өңдейді.<br><br>
+<b>Топтық жұмыс (8 мин):</b> Оқушылар 4 топқа бөлінеді. Әр топқа суреттер карточкасы беріледі. Тапсырма: суреттердегі ақпараттың түрін (мәтін, сан, дыбыс, графика, бейне) анықтап, постерге жапсыру. Топтар постерлерін таныстырады.`},
+                {stage:"Қолдану (25–38 мин)", activity:`<b>Практикалық жұмыс — кесте толтыру (8 мин):</b><br>
+Дәптерге кесте сызу: Сезім мүшесі | Ақпарат түрі | Мысал (2-ден кем емес)<br>
+Оқушылар дербес орындайды, мұғалім жүріп тексереді.<br><br>
+<b>Компьютермен практика (5 мин):</b> Мұғалім компьютерде файлдар қоймасын ашады. Оқушылар mp3, jpg, docx, mp4 файлдарын анықтап, ақпараттың қай түріне жататынын жауаптайды.<br><br>
+<b>Танымдық факт:</b> Адам 1 секундта шамамен 11 миллион бит ақпарат алады, бірақ оның тек 40 биті ғана санаға жетеді!`},
+                {stage:"Рефлексия (38–45 мин)", activity:`<b>Қорытынды бағалау — 'Білім ағашы' (4 мин):</b><br>
+• Жасыл жапырақ — бәрін түсіндім, орындай аламын<br>
+• Сары жапырақ — сұрақтарым бар, кейбірін түсінбедім<br>
+• Қызыл жапырақ — қиын болды, қосымша түсіндіру керек<br>
+Мұғалім жапырақтарды жинап, кейінгі сабақта қиын тақырыптарға қайта оралады.<br><br>
+<b>Үй тапсырмасы (1 мин):</b> Күнделікті өмірден әр сезім мүшесі арқылы алған ақпаратқа 2-ден мысал жаз (барлығы 10 мысал). Қосымша: ақпараттың 4 қасиетін жаттап кел.`}
+            ]
+        }
+    },
+    {
+        id:3,
+        title:"Компьютердің құрылғылары",
+        shortDesc:"Компьютер неден тұрады? Жүйелік блок, монитор, пернетақта, тышқан. Енгізу және шығару құрылғылары.",
+        image:"https://images.unsplash.com/photo-1591405351990-4726e331f141?auto=format&fit=crop&w=1200&q=80",
+        tag:"Тақырып 3",
+        youtubeId:"d0WKu_e3riU",
+        content:`
+            <h2>1. Компьютердің негізгі (міндетті) құрылғылары</h2>
+            <p>Дербес компьютер жұмыс істеуі үшін міндетті түрде 4 негізгі құрылғы болуы керек. Олардың біреуі болмаса, компьютер жұмыс істей алмайды.</p>
+            <ul>
+                <li><strong>⚙️ Жүйелік блок (System Unit):</strong> Компьютердің 'денесі'. Ішінде процессор, жедел жад, қатты диск орналасқан.</li>
+                <li><strong>🖥️ Монитор (Monitor):</strong> Ақпаратты экранда бейнелейтін шығару құрылғысы.</li>
+                <li><strong>⌨️ Пернетақта (Keyboard):</strong> Мәтін, сандар мен командаларды енгізуге арналған негізгі енгізу құрылғысы.</li>
+                <li><strong>🖱️ Тышқан (Mouse):</strong> Экрандағы объектілерді басқаруға арналған манипулятор.</li>
+            </ul>
+            <div class="important-box"><strong>🧠 Процессор (CPU — Central Processing Unit):</strong> Компьютердің 'миы'. Барлық есептеулерді орындайды. Жылдамдығы Герц (Гц) бірлігімен өлшенеді. Қазіргі заманғы процессорлар секундына миллиардтаған операция орындайды!</div>
+
+            <h3>2. Жүйелік блоктың ішкі құрамдастары</h3>
+            <ul>
+                <li><strong>Процессор (CPU):</strong> Барлық есептеулер мен командаларды орындайды — 'компьютердің миы'.</li>
+                <li><strong>Жедел жад (RAM — Random Access Memory):</strong> Уақытша ақпарат сақтайды. Компьютер өшсе, ақпарат жоғалады. Гигабайтпен (ГБ) өлшенеді.</li>
+                <li><strong>Қатты диск (HDD/SSD):</strong> Ақпаратты тұрақты сақтайды. Компьютер өшсе де ақпарат сақталады.</li>
+                <li><strong>Аналық тақша (Motherboard):</strong> Барлық құрылғыларды бір-бірімен байланыстырады — 'компьютердің жүйке жүйесі'.</li>
+                <li><strong>Бейне карта (GPU):</strong> Мониторда сурет пен бейнені шығаруға жауапты.</li>
+            </ul>
+
+            <h3>3. Енгізу және шығару құрылғылары</h3>
+            <p>Компьютердің барлық сыртқы құрылғылары екі топқа бөлінеді:</p>
+            <ul>
+                <li><strong>Енгізу (Input) құрылғылары:</strong> Пернетақта, тышқан, сканер, микрофон, вебкамера, джойстик, сенсорлы экран. Бұл құрылғылар компьютерге ақпарат береді.</li>
+                <li><strong>Шығару (Output) құрылғылары:</strong> Монитор, принтер, колонкалар (дауыс зорайтқыш), проектор. Бұл құрылғылар компьютерден ақпарат алады.</li>
+            </ul>
+            <p>Кейбір құрылғылар <strong>аралас</strong> болады — мысалы, сенсорлы экран (планшет экраны): ол бір мезгілде ақпарат енгізеді де, шығарады да.</p>
+
+            <h3>4. Ақпаратты сақтаудың өлшем бірліктері</h3>
+            <p>Компьютерде ақпарат екілік жүйеде (0 және 1) сақталады. Ең кіші өлшем бірлігі — <strong>бит</strong>. Одан кейін:</p>
+            <ul>
+                <li>8 бит = 1 <strong>байт</strong></li>
+                <li>1024 байт = 1 <strong>килобайт (КБ)</strong></li>
+                <li>1024 КБ = 1 <strong>мегабайт (МБ)</strong></li>
+                <li>1024 МБ = 1 <strong>гигабайт (ГБ)</strong></li>
+                <li>1024 ГБ = 1 <strong>терабайт (ТБ)</strong></li>
+            </ul>
+        `,
+        quiz:[
+            {q:"Компьютердің 'миы' деп нені атайды?", options:["Монитор","Пернетақта","Процессор (CPU)"], correct:2},
+            {q:"Қайсысы шығару (output) құрылғысы?", options:["Тышқан","Принтер","Сканер"], correct:1},
+            {q:"Мәтінді компьютерге енгізу үшін не қажет?", options:["Микрофон","Пернетақта","Колонка"], correct:1}
+        ],
+        kmzh:{
+            target:"5.1.1.2 — Компьютердің негізгі құрылғыларының (процессор, жедел жад, монитор, пернетақта, тышқан) атауы мен қызметін түсіндіру; Жүйелік блоктың ішкі компоненттерін сипаттау; Енгізу және шығару құрылғыларын ажырату және мысалдар келтіру; Ақпаратты сақтаудың өлшем бірліктерін (бит, байт, КБ, МБ, ГБ) атап, есептеулер жасау.",
+            resources:"Компьютерлер, жүйелік блоктың бөлшектері (муляждар немесе плакаттар), 'Енгізу-Шығару' карточкалары, интерактивті тест, смайлик-стикерлер.",
+            plan:[
+                {stage:"Басталуы (0–5 мин)", activity:`<b>Мотивация — 'Компьютерге хат' (3 мин):</b> Мұғалім: "Егер компьютер тілге келсе, ол не дер еді?" дейді. 2-3 оқушы шығармашылықпен жауап береді. Бұл оқушылардың компьютер туралы алдын-ала білімін анықтайды.<br><br>
+<b>Өткенді қайталау — Блиц-сұрақтар (2 мин):</b> "Ақпараттың түрлері", "Сезім мүшелері" бойынша 5 жылдам сұрақ.`},
+                {stage:"Негізгі бөлім (5–28 мин)", activity:`<b>Жаңа сабақ — 'Компьютер анатомиясы' (12 мин):</b><br>
+Жүйелік блоктың ішкі суреті тақтада немесе экранда. Мұғалім компоненттерді бірізді таныстырады:<br>
+1. Аналық тақша → 2. Процессор → 3. Жедел жад → 4. Қатты диск → 5. Бейне карта<br>
+Аналогия: "Процессор — мидың орталығы, Жедел жад — жұмыс үстелі (жылдам бірақ аз), Қатты диск — сөре (баяу бірақ үлкен)".<br><br>
+<b>Топтастыру тапсырмасы (8 мин):</b> Тақтаға "Енгізу" мен "Шығару" деген екі баған жазылады. Мұғалім құрылғылардың суреттерін немесе карточкаларын ұсынады, оқушылар дұрыс бағанға жапсырады.<br><br>
+<b>Ойын — 'Дауыс-аяқ' (3 мин):</b> Мұғалім құрылғы атайды: Енгізу болса — оқушылар қолшапалақтайды, Шығару болса — аяқпен тарс-тарс дыбыс шығарады. Жылдамдық артқан сайын қиындайды.`},
+                {stage:"Бекіту (28–40 мин)", activity:`<b>Практикалық жұмыс (8 мин):</b><br>
+1. Компьютерді ашу (тек монитор мен жүйелік блокты).<br>
+2. Тышқан мен пернетақтаны USB порттарына қосу. Оқушылар портты өздері табады.<br>
+3. Компьютерді қосу, жіберу экранының жүктелуін бақылау.<br><br>
+<b>Жұптық жұмыс (4 мин):</b> Жұмыс парағына берілген 12 құрылғыны "Негізгі/Қосымша" және "Енгізу/Шығару" деп жіктеу кестесін толтыру. Жұптар бір-бірінің жауабын тексереді.`},
+                {stage:"Аяқталуы (40–45 мин)", activity:`<b>Қорытынды — 'Еркін микрофон' (3 мин):</b> 3 оқушы сабақта не үйренгенін өз сөзімен баяндайды.<br><br>
+<b>Бағалау (2 мин):</b> Дескриптор бойынша:<br>
+✅ Процессордың қызметін айта алады<br>
+✅ Кем дегенде 3 енгізу + 3 шығару құрылғысын атайды<br>
+✅ ГБ мен МБ айырмашылығын түсіндіреді<br><br>
+<b>Үй тапсырмасы:</b> Үйдегі барлық электрондық құрылғыларды тізімдеп, оларды "Енгізу" немесе "Шығару" деп жіктеу.`}
+            ]
+        }
+    },
+    {
+        id:4,
+        title:"Файлдар мен бумалар",
+        shortDesc:"Ақпаратты компьютерде қалай сақтайды? Файл, бума, кеңейтілім ұғымдары. Файлдарды құру, атын өзгерту, жою.",
+        image:"https://images.unsplash.com/photo-1563986768609-322da13575f3?auto=format&fit=crop&w=1200&q=80",
+        tag:"Тақырып 4",
+        youtubeId:"dU1xS07N-FA",
+        content:`
+            <h2>1. Файл дегеніміз не?</h2>
+            <p>Файл (ағылшынша <em>file</em> — іс қағаздар жинағы) — компьютерде белгілі бір атауы бар, логикалық жинақталған ақпарат. Файл дискіде (қатты дискте, флешкада) сақталады. Мысалы, сіз жазған мәтін, салған сурет немесе тыңдайтын музыка — бәрі файл.</p>
+            <div class="important-box"><strong>📄 Файл = Аты + Нүкте + Кеңейтілім</strong><br>Мысал: <code>сабақ.docx</code> — мұнда "сабақ" — аты, ".docx" — кеңейтілімі (файл түрін білдіреді).</div>
+
+            <h3>2. Файл атауын беру ережелері</h3>
+            <p>Windows жүйесінде файл атауында <strong>мынадай символдарды пайдалануға болмайды:</strong></p>
+            <ul>
+                <li>? * / | &lt; &gt; " : \ — бұл белгілер жүйелік командаларда қолданылады</li>
+                <li>Атау ұзындығы — 255 символдан аспауы керек</li>
+                <li>Файл атауы бос болмауы тиіс</li>
+            </ul>
+            <p>Файлдарды атауда мазмұнына сай, нақты, қысқа атаулар беру ұсынылады: "Информатика_сабақ1.docx" жақсы, ал "жжжжж.docx" — нашар.</p>
+
+            <h3>3. Кеңейтілімдер — файлдардың паспорты</h3>
+            <p>Кеңейтілім компьютерге файлды қандай бағдарламамен ашу керектігін айтады:</p>
+            <ul>
+                <li><strong>.docx, .doc</strong> — Microsoft Word мәтіндік файлдары</li>
+                <li><strong>.xlsx, .xls</strong> — Microsoft Excel кесте файлдары</li>
+                <li><strong>.pptx, .ppt</strong> — Microsoft PowerPoint презентациялары</li>
+                <li><strong>.jpg, .png, .gif, .bmp</strong> — суреттер мен фотографиялар</li>
+                <li><strong>.mp3, .wav, .aac</strong> — аудио (дыбыс) файлдары</li>
+                <li><strong>.mp4, .avi, .mov</strong> — видео файлдары</li>
+                <li><strong>.pdf</strong> — электрондық кітаптар мен құжаттар</li>
+                <li><strong>.exe</strong> — орындалатын бағдарламалар (абай болыңыз!)</li>
+                <li><strong>.zip, .rar</strong> — мұрағат (сығылған) файлдары</li>
+            </ul>
+
+            <h3>4. Бума (Папка) дегеніміз не?</h3>
+            <p>Бума (Папка, Folder) — компьютерде файлдарды ретке келтіріп, топтастыруға арналған контейнер. Бума ішінде файлдар да, басқа бумалар да болуы мүмкін — бұл "кірістірілген бумалар" (ағылшынша <em>nested folders</em>) деп аталады.</p>
+            <p><strong>Аналогия:</strong> Бума — бұл сөре немесе тартпа. Файлдар — кітаптар. Ретті сөредегі кітаптарды тез табасыз!</p>
+
+            <h3>5. Файлдармен негізгі операциялар</h3>
+            <ul>
+                <li><strong>Құру (Create):</strong> Жаңа файл немесе бума жасау</li>
+                <li><strong>Ашу (Open):</strong> Файл мазмұнын көру</li>
+                <li><strong>Сақтау (Save — Ctrl+S):</strong> Өзгерістерді сақтау</li>
+                <li><strong>Атын өзгерту (Rename — F2):</strong> Файлдың атауын өзгерту</li>
+                <li><strong>Көшіру (Copy — Ctrl+C):</strong> Файлдың көшірмесін жасау</li>
+                <li><strong>Қиып алу (Cut — Ctrl+X):</strong> Файлды бір жерден екіншіге жылжыту</li>
+                <li><strong>Кірістіру (Paste — Ctrl+V):</strong> Көшірілген файлды қою</li>
+                <li><strong>Жою (Delete):</strong> Файлды Себетке жіберу</li>
+                <li><strong>Мүлдем жою (Shift+Delete):</strong> Файлды Себетке салмай тікелей жою</li>
+            </ul>
+        `,
+        quiz:[
+            {q:"Файлдар сақталатын орын қалай аталады?", options:["Бума","Бағдарлама","Файл"], correct:0},
+            {q:"Файл атында қай таңбаны қолдануға болмайды?", options:["-","_","?"], correct:2},
+            {q:"Файлды жойғанда ол қайда барады?", options:["Себетке (Корзина)","Жадқа","Мұрағатқа"], correct:0}
+        ],
+        kmzh:{
+            target:"5.2.2.1 — Файл және бума (папка) ұғымдарын анықтауды және олардың айырмашылығын түсіндіруді үйрету; Файл кеңейтілімдерінің мәнін және жалпы файл түрлерін білу; Файлдарды құру, атын өзгерту, жылжыту, көшіру және жою амалдарын практикада меңгеру; Деректерді жоғалтпау үшін файлдарды жүйелі сақтаудың маңыздылығын сезіну.",
+            resources:"Дербес компьютерлер (оқушы санына қарай), Windows файлдық менеджері (Проводник), мысал файлдары жиынтығы, тапсырмалар парағы.",
+            plan:[
+                {stage:"Кіріспе (0–5 мин)", activity:`<b>Қайталау — Викторина (3 мин):</b> Компьютер құрылғылары бойынша 5 сұрақты интерактивті тест (Kahoot немесе слайд).<br><br>
+<b>Мәселе қою (2 мин):</b> "Мыңдаған суреттерді, музыка мен фильмдерді компьютерде жүйесіз сақтасаңыз, қажетті файлды тез таба аласыз ба?" — Оқушылар жауап береді. Тәртіп пен жүйенің маңыздылығы қарастырылады.`},
+                {stage:"Теория (5–20 мин)", activity:`<b>Түсіндіру — метафора арқылы (8 мин):</b><br>
+• Файл → Кітап (ішіне ақпарат жазылған)<br>
+• Бума → Сөре (кітаптарды топтастырады)<br>
+• Диск (C:, D:) → Кітапхана (барлық сөрелер бар жер)<br>
+Слайдтар арқылы нақты мысалдармен түсіндіру.<br><br>
+<b>Кеңейтілімдер дүкені (5 мин):</b> "Файл паспорты" деп аталатын карточкалар. Мұғалім кеңейтілімді айтады — оқушылар файлдың қандай бағдарламада ашылатынын жауаптайды.<br><br>
+<b>Алгоритм — 'Бума қалай жасалады?' (2 мин):</b><br>
+1. Жұмыс үстелінде тышқанның оң жақ батырмасын басу<br>
+2. Мәзірден 'Құру' (Создать) таңдау<br>
+3. 'Папка' (Бума) таңдау<br>
+4. Атау беріп Enter басу`},
+                {stage:"Практика (20–40 мин)", activity:`<b>Компьютердегі практикалық жұмыс (20 мин):</b><br>
+Оқушылардың орындайтын тапсырмалары:<br>
+1. <b>Жұмыс үстелінде бума құру:</b> 'Менің Информатика сабақтарым' деп атайды.<br>
+2. <b>Ішінде 3 бума жасайды:</b> '1-тоқсан', '2-тоқсан', '3-тоқсан'.<br>
+3. <b>1-тоқсан бумасында 2 файл:</b> Мәтін.txt (Блокнотпен ашып, "Менің атым..." деп жазады) және Сурет.bmp (Paint-пен ашып, кез-келген сурет салады).<br>
+4. <b>Файлдың атын өзгерту (F2):</b> 'Мәтін.txt' → 'Биография.txt' деп өзгертеді.<br>
+5. <b>Сурет файлын 2-тоқсан бумасына көшіреді (Ctrl+C, Ctrl+V).</b><br>
+6. <b>3-тоқсан бумасына жылжытады (Ctrl+X, Ctrl+V).</b><br>
+7. <b>Биография.txt файлын жояды және Себеттен қалпына келтіреді.</b>`},
+                {stage:"Қорытынды (40–45 мин)", activity:`<b>Рефлексия — 'Табыс сатысы' (3 мин):</b><br>
+Тақтада баспалдақ сызбасы:<br>
+• 1-баспалдақ: Файл дегенімді біламін<br>
+• 2-баспалдақ: Бума жасай аламын<br>
+• 3-баспалдақ: Файлдарды реттей аламын<br>
+• 4-баспалдақ: Барлық операцияларды дербес орындай аламын<br>
+Оқушылар өз деңгейін өздері белгілейді.<br><br>
+<b>Бағалау (2 мин):</b> Тәжірибелік жұмыстың орындалу сапасы бойынша:<br>
+✅ Барлық бумалар мен файлдар дұрыс жасалған<br>
+✅ Файл атауы ережеге сай берілген<br>
+✅ Файлды жоғалтпай қалпына келтіре алды`}
+            ]
+        }
+    }
+];
+
+// GAMES DATABASE
+const gamesDB = {
+    game1: {
+        title:"Қауіпсіздік Логикасы", gradient:"linear-gradient(135deg,#6366f1,#a855f7)",
+        levels:[
+            {q:"1-деңгей: Компьютер жұмыс істеп тұрғанда, ішіндегі шаңды дымқыл шүберекпен сүртуге бола ма?", options:["Иә, тазалық маңызды","Жоқ, ток соғуы мүмкін"], correct:1},
+            {q:"2-деңгей: Монитор сөніп қалса, оқушының дұрыс әрекеті:", options:["Сымдарды өзі тексеріп көреді","Мұғалімді шақырады","Мониторды ұрып көреді"], correct:1},
+            {q:"3-деңгей: Өрт сөндіргішті (огнетушитель) неге бағыттау керек?", options:["Жалынның жоғарғы жағына","Жалынның ошағына (төменіне)","Тек түтінге"], correct:1}
+        ]
+    },
+    game2: {
+        title:"Артығын Тап", gradient:"linear-gradient(135deg,#10b981,#3b82f6)",
+        levels:[
+            {q:"1-деңгей: Компьютердің негізгі құрамдас бөлігі ЕМЕС (қосымша):", options:["Жүйелік блок","Монитор","Пернетақта","Принтер"], correct:3},
+            {q:"2-деңгей: Қолданбалы бағдарламаларға жатпайды:", options:["MS Word","Windows 11","Paint","PowerPoint"], correct:1},
+            {q:"3-деңгей: Жад тасымалдаушы ЕМЕС:", options:["Флешка","HDD","Процессор","Оптикалық диск"], correct:2}
+        ]
+    },
+    game3: {
+        title:"Сөзжұмбақ", gradient:"linear-gradient(135deg,#f59e0b,#ef4444)",
+        levels:[
+            {word:"МОНИТОР", scrambled:"Р О Т И Н О М", hint:"Ақпаратты шығару құрылғысы"},
+            {word:"БАҒДАРЛАМА", scrambled:"А Л Р А Д А Ғ Б А М", hint:"Компьютерге нұсқау беретін кодтар жиынтығы"},
+            {word:"АРХИТЕКТУРА", scrambled:"Т У Р А Т Е К Х И Р А", hint:"Компьютер компоненттерінің байланысы"}
+        ]
+    },
+    game4: {
+        title:"Алгоритм Құру", gradient:"linear-gradient(135deg,#ec4899,#8b5cf6)",
+        levels:[
+            {desc:"1-деңгей: Жаңа бума (Папка) құру реттілігі", steps:["Оң жақ батырманы басу","'Құру' (Создать) таңдау","'Бума' (Папка) таңдау","Атау беріп, Enter басу"], correctOrder:"0123"},
+            {desc:"2-деңгей: Мәтін бөлігін қиып алып, басқа жерге қою", steps:["Мәтінді ерекшелеу","'Қиып алу' (Ctrl+X) басу","Курсорды керек жерге қою","'Кірістіру' (Ctrl+V) басу"], correctOrder:"0123"},
+            {desc:"3-деңгей: Компьютерді дұрыс өшіру алгоритмі", steps:["Ашық терезелерді жабу","'Бастау' (Пуск) түймесін басу","'Қуат' (Power) таңдау","'Өшіру' (Завершение работы) басу"], correctOrder:"0123"}
+        ]
+    },
+    game5: {
+        title:"Жеделдеткіш: Кеңейтілімдер", gradient:"linear-gradient(135deg,#0ea5e9,#6366f1)",
+        levels:[
+            {q:"1-деңгей: '.mp3' кеңейтілімді файл қандай ақпаратты сақтайды?", options:["Мәтін","Дыбыс","Сурет","Бейне"], correct:1},
+            {q:"2-деңгей: Microsoft Word файлының кеңейтілімі:", options:[".xlsx",".pptx",".docx",".pdf"], correct:2},
+            {q:"3-деңгей: '.exe' файлы не болып табылады?", options:["Сурет","Орындалатын бағдарлама","Мұрағат","Аудио"], correct:1}
+        ]
+    },
+    game6: {
+        title:"Ақпарат: Сезім Мүшелері", gradient:"linear-gradient(135deg,#f97316,#ec4899)",
+        levels:[
+            {q:"1-деңгей: 'Гүлдің иісін сезу' — ақпараттың қай түрі?", options:["Визуалды","Аудиалды","Иіскеу","Тактильді"], correct:2},
+            {q:"2-деңгей: Адам ақпараттың неше пайызын 'көру' арқылы алады?", options:["30%","50%","80%","10%"], correct:2},
+            {q:"3-деңгей: 'Тактильді ақпарат' дегеніміз не?", options:["Музыка тыңдау","Сипап сезу арқылы алынған ақпарат","Кино көру","Тамақтың иісін сезу"], correct:1}
+        ]
+    },
+    game7: {
+        title:"Логикалық Сызбалар", gradient:"linear-gradient(135deg,#22d3ee,#10b981)",
+        levels:[
+            {q:"1-деңгей: 1 Гигабайт неге тең?", options:["1000 МБ","1024 МБ","512 МБ","2048 МБ"], correct:1},
+            {q:"2-деңгей: Бит пен байттың қатынасы:", options:["4 бит = 1 байт","8 бит = 1 байт","16 бит = 1 байт","2 бит = 1 байт"], correct:1},
+            {q:"3-деңгей: RAM (жедел жад) туралы дұрыс тұжырым:", options:["Ақпаратты тұрақты сақтайды","Компьютер өшсе деректер сақталады","Уақытша ақпарат сақтайды","Процессордан баяу"], correct:2}
+        ]
+    }
+};
+
+const gameImages = {
+    game1:"https://images.unsplash.com/photo-1555949963-aa79dcee981c?auto=format&fit=crop&w=600&q=80",
+    game2:"https://images.unsplash.com/photo-1636953056323-9c09fdd74fa6?auto=format&fit=crop&w=600&q=80",
+    game3:"https://images.unsplash.com/photo-1611532736597-de2d4265fba3?auto=format&fit=crop&w=600&q=80",
+    game4:"https://images.unsplash.com/photo-1516116216624-53e697fedbea?auto=format&fit=crop&w=600&q=80",
+    game5:"https://images.unsplash.com/photo-1504639725590-34d0984388bd?auto=format&fit=crop&w=600&q=80",
+    game6:"https://images.unsplash.com/photo-1527689368864-3a821dbccc34?auto=format&fit=crop&w=600&q=80",
+    game7:"https://images.unsplash.com/photo-1509966756634-9c23dd6e6815?auto=format&fit=crop&w=600&q=80"
+};
+
+let currentGameState = {};
+let audioElement = null;
+
+// =========================================
+// RENDER FUNCTIONS
+// =========================================
+function renderLessons() {
+    const grid = document.getElementById('main-grid');
+    const p = getProgress();
+    grid.innerHTML = lessonsData.map(l => {
+        const done = p.completed.includes(l.id);
+        const bookmarked = (p.bookmarks||[]).includes(l.id);
+        const btnLabel = currentLang === 'kk' ? 'Сабақты бастау' : 'Начать урок';
+        return `
+        <div class="card" onclick="openLesson(${l.id})" style="cursor:pointer;${done?'border-color:var(--primary);':''}">
+            <div class="card-img-wrap">
+                <img src="${l.image}" class="card-image" alt="${l.title}" loading="lazy">
+                <span class="card-tag">${l.tag}</span>
+                ${done ? '<span style="position:absolute;top:14px;left:14px;background:var(--primary);color:white;padding:3px 10px;border-radius:20px;font-size:0.72rem;font-weight:800;">✅ ' + (currentLang==='kk'?'Аяқталды':'Завершён') + '</span>' : ''}
+                <button class="bookmark-btn ${bookmarked?'saved':''}" onclick="event.stopPropagation(); handleBookmark(${l.id}, this)">${bookmarked?'🔖':'🔖'}</button>
+            </div>
+            <div class="card-info">
+                <h3>${l.title}</h3>
+                <p>${l.shortDesc}</p>
+                <button class="btn-action" onclick="event.stopPropagation(); openLesson(${l.id})">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+                    ${btnLabel}
+                </button>
+            </div>
+        </div>`;
+    }).join('');
+}
+
+function handleBookmark(id, btn) {
+    const saved = toggleBookmark(id);
+    btn.classList.toggle('saved', saved);
+}
+
+
+function renderGames() {
+    const grid = document.getElementById('games-grid');
+    grid.innerHTML = Object.entries(gamesDB).map(([id, g]) => `
+        <div class="game-card" style="background:${g.gradient}; padding:20px;">
+            <div class="game-card-inner">
+                <img src="${gameImages[id]}" class="game-card-img" alt="${g.title}" loading="lazy">
+                <h3>${g.title}</h3>
+                <p>3 деңгейлі логикалық ойын</p>
+                <button class="game-btn" onclick="initGame('${id}')">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+                    Бастау
+                </button>
+                <div id="${id}-area" class="game-area"></div>
+            </div>
+        </div>
+    `).join('');
+}
+
+function renderKMZH() {
+    const list = document.getElementById('kmzh-list');
+    list.innerHTML = lessonsData.map(l => `
+        <div class="kmzh-card">
+            <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:28px;flex-wrap:wrap;gap:15px;">
+                <h2 style="color:var(--primary);font-size:1.9rem;display:flex;align-items:center;gap:15px;letter-spacing:-0.3px;">
+                    <span style="background:linear-gradient(135deg,var(--primary),var(--secondary));color:white;width:48px;height:48px;display:flex;align-items:center;justify-content:center;border-radius:50%;font-size:1.3rem;font-weight:800;flex-shrink:0;">${l.id}</span>
+                    ${l.title}
+                </h2>
+                <span style="background:rgba(16,185,129,0.1);color:var(--accent);padding:6px 18px;border-radius:30px;font-weight:700;font-size:0.8rem;white-space:nowrap;border:1px solid rgba(16,185,129,0.2);">5-сынып | Информатика</span>
+            </div>
+
+            <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:20px;margin-bottom:32px;">
+                <div style="background:var(--card-bg);padding:28px;border-radius:20px;border:1px solid var(--border);box-shadow:var(--shadow);">
+                    <h4 style="color:var(--secondary);margin-bottom:14px;font-size:1rem;display:flex;align-items:center;gap:8px;">🎯 Оқу мақсаттары</h4>
+                    <p style="font-size:0.92rem;line-height:1.7;color:var(--text-main);">${l.kmzh.target}</p>
+                </div>
+                <div style="background:var(--card-bg);padding:28px;border-radius:20px;border:1px solid var(--border);box-shadow:var(--shadow);">
+                    <h4 style="color:var(--secondary);margin-bottom:14px;font-size:1rem;display:flex;align-items:center;gap:8px;">🛠 Ресурстар мен құралдар</h4>
+                    <p style="font-size:0.92rem;line-height:1.7;color:var(--text-main);">${l.kmzh.resources}</p>
+                </div>
+            </div>
+
+            <div style="overflow-x:auto;">
+                <table class="kmzh-table">
+                    <thead>
+                        <tr>
+                            <th>Уақыт / Кезең</th>
+                            <th>Мұғалім мен оқушының іс-әрекеті (Толық сипаттама)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${l.kmzh.plan.map(p => `
+                            <tr>
+                                <td class="kmzh-stage">${p.stage}</td>
+                                <td style="line-height:1.75;">${p.activity}</td>
+                            </tr>
+                        `).join('')}
+                    </tbody>
+                </table>
+            </div>
+
+            <div style="margin-top:24px;padding:20px 24px;background:rgba(79,70,229,0.04);border-radius:16px;border:1px dashed rgba(79,70,229,0.3);">
+                <p style="font-size:0.9rem;color:var(--text-dim);line-height:1.7;">
+                    <strong>💡 Бағалау критерийлері:</strong> Дескриптор бойынша оқушы: (1) тақырыптың негізгі ұғымдарын анықтамамен айта алады; (2) мысалдар келтіре алады; (3) практикалық тапсырманы қатесіз немесе 1 қатемен орындайды; (4) өз сөзімен түсіндіре алады.
+                </p>
+            </div>
+        </div>
+    `).join('');
+}
+
+// =========================================
+// LESSON VIEW
+// =========================================
+function openLesson(id) {
+    const lesson = lessonsData.find(l => l.id === id);
+    const container = document.getElementById('lesson-view-container');
+
+    let quizHtml = lesson.quiz.map((q, idx) => `
+        <div class="question-block">
+            <p style="font-size:1.1rem;font-weight:700;margin-bottom:15px;">${idx+1}. ${q.q}</p>
+            <div style="display:grid;gap:10px;">
+                ${q.options.map((opt, i) => `<button class="option-btn" onclick="checkAnswer(this,${i===q.correct})">${opt}</button>`).join('')}
+            </div>
+        </div>
+    `).join('');
+
+    container.innerHTML = `
+        <div style="margin-bottom:40px;text-align:center;">
+            <h1 style="font-size:2.4rem;font-weight:800;margin-bottom:20px;letter-spacing:-0.5px;">${lesson.title}</h1>
+            <img src="${lesson.image}" style="width:100%;max-height:420px;object-fit:cover;border-radius:24px;box-shadow:var(--shadow-lg);">
+        </div>
+
+        <!-- VIDEO SECTION -->
+        <div class="video-section">
+            <h3>🎬 Видеосабақ — YouTube</h3>
+            <div class="video-embed">
+                <iframe 
+                    src="https://www.youtube.com/embed/${lesson.youtubeId}?rel=0&modestbranding=1" 
+                    title="${lesson.title} — видеосабақ"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    allowfullscreen
+                    loading="lazy">
+                </iframe>
+            </div>
+        </div>
+
+        <!-- AUDIO SECTION -->
+        <div class="audio-section">
+            <h3>🎵 Аудио тыңдау</h3>
+            <div class="audio-upload-area" onclick="document.getElementById('audioFileInput_${id}').click()">
+                <input type="file" id="audioFileInput_${id}" accept=".mp3,.wav,.ogg,.m4a,audio/*" onchange="handleAudioUpload(event,'${lesson.title}')">
+                <div class="upload-icon">🎧</div>
+                <div class="upload-text">MP3 файлды жүктеңіз (сақталады)</div>
+                <div class="upload-sub">MP3, WAV, OGG • Файл жүктелсе обновить еткенде де сақталады!</div>
+            </div>
+            <div style="margin-bottom:16px;display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
+                <input type="text" id="audioUrlInput_${id}" placeholder="Немесе MP3 сілтемесін осында қойыңыз..." 
+                    style="flex:1;min-width:200px;padding:12px 16px;border:2px solid var(--border);border-radius:14px;font-size:0.95rem;background:var(--bg);color:var(--text-main);font-family:inherit;transition:0.2s;"
+                    onfocus="this.style.borderColor='var(--primary)'" onblur="this.style.borderColor='var(--border)'">
+                <button onclick="loadAudioFromUrl('audioUrlInput_${id}','${lesson.title}')" class="btn-action" style="width:auto;padding:12px 22px;white-space:nowrap;">
+                    ▶ Жүктеу
+                </button>
+                <button onclick="clearSavedAudio()" title="Сақталған аудионы өшіру" style="background:none;border:2px solid var(--danger);color:var(--danger);padding:12px 16px;border-radius:14px;cursor:pointer;font-weight:700;white-space:nowrap;transition:0.2s;" onmouseover="this.style.background='var(--danger)';this.style.color='white'" onmouseout="this.style.background='none';this.style.color='var(--danger)'">
+                    🗑 Өшіру
+                </button>
+            </div>
+            <div id="audioPlayerBox" class="audio-player-custom">
+                <div class="apc-controls">
+                    <button class="apc-btn" onclick="toggleAudio()">▶</button>
+                    <button class="apc-btn stop" onclick="stopAudioPlayer()">■</button>
+                </div>
+                <div class="apc-info">
+                    <div class="apc-name" id="apcName">—</div>
+                    <div class="apc-status" id="apcStatus">Дайын</div>
+                    <div class="apc-bar-bg"><div class="apc-bar-fill" id="apcProgress"></div></div>
+                </div>
+                <div class="apc-visualizer" id="apcVisualizer">
+                    <div class="apc-bar-v" style="height:6px;"></div>
+                    <div class="apc-bar-v" style="height:14px;"></div>
+                    <div class="apc-bar-v" style="height:10px;"></div>
+                    <div class="apc-bar-v" style="height:18px;"></div>
+                    <div class="apc-bar-v" style="height:8px;"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="content-block">${lesson.content}</div>
+
+        <div class="quiz-wrapper">
+            <h2 style="text-align:center;margin-bottom:32px;font-size:1.7rem;">🧠 ${currentLang==='kk'?'Өзіңді тексер':'Проверь себя'}</h2>
+            ${quizHtml}
+            <div style="text-align:center;margin-top:28px;">
+                <button class="btn-action" style="max-width:320px;margin:0 auto;" onclick="completeLessonBtn(${id})">
+                    ✅ ${currentLang==='kk'?'Сабақты аяқтадым':'Урок завершён'}
+                </button>
+            </div>
+        </div>
+    `;
+
+    showSection('single-lesson-view');
+    restoreAudioPlayerUI();
+}
+
+function completeLessonBtn(id) {
+    markLessonComplete(id);
+    renderLessons();
+    const btn = event.target;
+    btn.style.background = 'linear-gradient(135deg,#10b981,#059669)';
+    btn.textContent = '🏆 ' + (currentLang==='kk' ? 'Керемет! +20 ұпай!' : 'Отлично! +20 очков!');
+    btn.disabled = true;
+    const p = getProgress(); p.tests = (p.tests||0) + 1; saveProgressData(p);
+    updateProgressUI();
+}
+const AUDIO_STORAGE_KEY = 'edusmart_audio_data';
+
+function saveAudioToStorage(url, name, isBlob) {
+    // Blob URL-дарды сақтау мүмкін емес (бет жабылса жоғалады)
+    // Тек сыртқы URL-дарды сақтаймыз
+    if (!isBlob) {
+        try {
+            localStorage.setItem(AUDIO_STORAGE_KEY, JSON.stringify({ url, name }));
+        } catch(e) { console.warn('localStorage save failed', e); }
+    }
+}
+
+function loadAudioFromStorage() {
+    try {
+        const raw = localStorage.getItem(AUDIO_STORAGE_KEY);
+        return raw ? JSON.parse(raw) : null;
+    } catch(e) { return null; }
+}
+
+function handleAudioUpload(event, title) {
+    const file = event.target.files[0];
+    if (!file) return;
+    // Файлды Base64-ке айналдырып localStorage-та сақтаймыз
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        const base64 = e.target.result; // data:audio/mp3;base64,...
+        try {
+            localStorage.setItem(AUDIO_STORAGE_KEY, JSON.stringify({ url: base64, name: file.name }));
+        } catch(storageErr) {
+            // Файл тым үлкен болса localStorage-қа сыймауы мүмкін
+            console.warn('Audio too large for localStorage, playing without saving');
+        }
+        setupAudioPlayer(base64, file.name);
+    };
+    reader.readAsDataURL(file);
+}
+
+function loadAudioFromUrl(inputId, title) {
+    const url = document.getElementById(inputId).value.trim();
+    if (!url) return;
+    saveAudioToStorage(url, title, false);
+    setupAudioPlayer(url, title);
+}
+
+function setupAudioPlayer(url, name) {
+    if (audioElement) { audioElement.pause(); audioElement = null; }
+    audioElement = new Audio(url);
+    audioElement.ontimeupdate = () => {
+        if (audioElement.duration) {
+            const pct = (audioElement.currentTime / audioElement.duration * 100).toFixed(1);
+            const prog = document.getElementById('apcProgress');
+            if (prog) prog.style.width = pct + '%';
+        }
+    };
+    audioElement.onended = () => {
+        const statusEl = document.getElementById('apcStatus');
+        const vizEl = document.getElementById('apcVisualizer');
+        const btnEl = document.querySelector('.apc-btn');
+        if (statusEl) statusEl.innerText = 'Аяқталды';
+        if (vizEl) vizEl.classList.remove('apc-playing');
+        if (btnEl) btnEl.innerHTML = '▶';
+    };
+    audioElement.onerror = () => {
+        const statusEl = document.getElementById('apcStatus');
+        if (statusEl) statusEl.innerText = '⚠️ Аудио жүктелмеді. URL-ды тексеріңіз.';
+    };
+    const nameEl = document.getElementById('apcName');
+    const statusEl = document.getElementById('apcStatus');
+    const playerBox = document.getElementById('audioPlayerBox');
+    const vizEl = document.getElementById('apcVisualizer');
+    const btnEl = document.querySelector('.apc-btn');
+    if (nameEl) nameEl.innerText = name;
+    if (statusEl) statusEl.innerText = 'Ойнатуға дайын';
+    if (playerBox) playerBox.classList.add('visible');
+    audioElement.play().then(() => {
+        if (statusEl) statusEl.innerText = 'Ойнатылуда...';
+        if (vizEl) vizEl.classList.add('apc-playing');
+        if (btnEl) btnEl.innerHTML = '⏸';
+    }).catch(err => {
+        if (statusEl) statusEl.innerText = 'Ойнату үшін ▶ басыңыз';
+    });
+}
+
+function restoreAudioPlayerUI() {
+    // Сабақ ашылғанда сақталған аудионы қалпына келтіру
+    setTimeout(() => {
+        const saved = loadAudioFromStorage();
+        if (!saved) return;
+        const playerBox = document.getElementById('audioPlayerBox');
+        const nameEl = document.getElementById('apcName');
+        const statusEl = document.getElementById('apcStatus');
+        if (!playerBox) return;
+        playerBox.classList.add('visible');
+        if (nameEl) nameEl.innerText = '💾 ' + saved.name + ' (сақталған)';
+        if (statusEl) statusEl.innerText = '▶ Ойнату үшін басыңыз';
+        // URL-ді input-қа қою (Base64 емес болса)
+        if (!saved.url.startsWith('data:')) {
+            const inputs = document.querySelectorAll('[id^="audioUrlInput_"]');
+            inputs.forEach(inp => { if(inp) inp.value = saved.url; });
+        }
+        // Аудио элементті дайындап қою (ойнатпай)
+        if (audioElement) { audioElement.pause(); audioElement = null; }
+        audioElement = new Audio(saved.url);
+        audioElement.ontimeupdate = () => {
+            if (audioElement.duration) {
+                const prog = document.getElementById('apcProgress');
+                if (prog) prog.style.width = (audioElement.currentTime / audioElement.duration * 100).toFixed(1) + '%';
+            }
+        };
+        audioElement.onended = () => {
+            const s = document.getElementById('apcStatus');
+            const v = document.getElementById('apcVisualizer');
+            const b = document.querySelector('.apc-btn');
+            if (s) s.innerText = 'Аяқталды';
+            if (v) v.classList.remove('apc-playing');
+            if (b) b.innerHTML = '▶';
+        };
+    }, 300);
+}
+
+function toggleAudio() {
+    if (!audioElement) return;
+    const statusEl = document.getElementById('apcStatus');
+    const vizEl = document.getElementById('apcVisualizer');
+    const btnEl = document.querySelector('.apc-btn');
+    if (audioElement.paused) {
+        audioElement.play();
+        if (statusEl) statusEl.innerText = 'Ойнатылуда...';
+        if (vizEl) vizEl.classList.add('apc-playing');
+        if (btnEl) btnEl.innerHTML = '⏸';
+    } else {
+        audioElement.pause();
+        if (statusEl) statusEl.innerText = 'Тоқтатылды';
+        if (vizEl) vizEl.classList.remove('apc-playing');
+        if (btnEl) btnEl.innerHTML = '▶';
+    }
+}
+
+function stopAudioPlayer() {
+    if (!audioElement) return;
+    audioElement.pause();
+    audioElement.currentTime = 0;
+    const statusEl = document.getElementById('apcStatus');
+    const vizEl = document.getElementById('apcVisualizer');
+    const progEl = document.getElementById('apcProgress');
+    const btnEl = document.querySelector('.apc-btn');
+    if (statusEl) statusEl.innerText = 'Тоқтатылды';
+    if (vizEl) vizEl.classList.remove('apc-playing');
+    if (progEl) progEl.style.width = '0%';
+    if (btnEl) btnEl.innerHTML = '▶';
+}
+
+function clearSavedAudio() {
+    localStorage.removeItem(AUDIO_STORAGE_KEY);
+    if (audioElement) { audioElement.pause(); audioElement = null; }
+    const playerBox = document.getElementById('audioPlayerBox');
+    if (playerBox) playerBox.classList.remove('visible');
+}
+
+// =========================================
+// GAME FUNCTIONS
+// =========================================
+function initGame(gameId) {
+    currentGameState[gameId] = { level:0, maxLevels:3 };
+    document.querySelectorAll('.game-area').forEach(a => { if (!a.id.startsWith(gameId)) a.style.display='none'; });
+    const area = document.getElementById(gameId+'-area');
+    area.style.display = 'block';
+    renderGameLevel(gameId);
+}
+
+function renderGameLevel(gameId) {
+    const state = currentGameState[gameId];
+    const area = document.getElementById(gameId+'-area');
+    const data = gamesDB[gameId];
+
+    if (state.level >= state.maxLevels) {
+        area.innerHTML = `
+            <div style="text-align:center;padding:20px;">
+                <div style="font-size:3rem;margin-bottom:10px;">🏆</div>
+                <h2 style="color:var(--accent);font-size:1.5rem;margin-bottom:8px;">ЖЕҢІС!</h2>
+                <p>Барлық деңгейді сәтті аяқтадыңыз!</p>
+                <button class="btn-action" style="margin-top:16px;" onclick="initGame('${gameId}')">🔄 Қайта ойнау</button>
+            </div>`;
+        return;
+    }
+
+    const lvl = data.levels[state.level];
+    let html = `<div class="game-level-indicator">Деңгей ${state.level+1} / ${state.maxLevels}</div>`;
+
+    if (gameId==='game3') {
+        html += `
+            <p style="text-align:center;font-size:1.5rem;font-weight:800;letter-spacing:6px;color:var(--primary);margin:10px 0;">${lvl.scrambled}</p>
+            <p style="text-align:center;color:var(--text-dim);font-size:0.88rem;margin-bottom:12px;">💡 Көмек: ${lvl.hint}</p>
+            <input type="text" class="game-input" id="${gameId}-input" placeholder="Жауабыңызды жазыңыз..." onkeydown="if(event.key==='Enter') checkAnagramAnswer('${gameId}')">
+            <button class="btn-action" style="padding:10px 18px;font-size:0.92rem;" onclick="checkAnagramAnswer('${gameId}')">Тексеру</button>
+        `;
+    } else if (gameId==='game4') {
+        let indices = lvl.steps.map((_,i)=>i).sort(()=>Math.random()-0.5);
+        html += `<p style="font-weight:700;margin-bottom:12px;">${lvl.desc}</p>`;
+        html += `<div id="${gameId}-buttons" style="display:flex;flex-direction:column;gap:6px;">`;
+        indices.forEach(i => {
+            html += `<button class="option-btn" onclick="addToAlgo('${gameId}',${i},this)">${i+1}. жол үшін — ${lvl.steps[i]}</button>`;
+        });
+        html += `</div>
+            <div style="margin-top:12px;padding:12px;background:var(--bg);border-radius:10px;font-size:0.9rem;">
+                <strong>Таңдалды:</strong> <span id="${gameId}-result" style="color:var(--primary);"></span>
+            </div>
+            <button class="btn-action" style="margin-top:10px;padding:8px 16px;width:auto;font-size:0.88rem;" onclick="renderGameLevel('${gameId}')">🔄 Тазалау</button>`;
+        currentGameState[gameId].userAlgo = "";
+    } else {
+        html += `<p style="font-weight:700;margin-bottom:14px;line-height:1.6;">${lvl.q}</p>`;
+        html += `<div style="display:grid;gap:8px;">`;
+        lvl.options.forEach((opt,idx) => {
+            html += `<button class="option-btn" onclick="checkGameAnswer('${gameId}',${idx})">${opt}</button>`;
+        });
+        html += `</div>`;
+    }
+
+    html += `<div id="${gameId}-feedback" class="game-feedback"></div>`;
+    html += `<button id="${gameId}-next-btn" class="btn-action" style="margin-top:14px;display:none;background:var(--accent);box-shadow:0 4px 15px rgba(16,185,129,0.3);" onclick="nextLevel('${gameId}')">Келесі →</button>`;
+    area.innerHTML = html;
+}
+
+function checkGameAnswer(gameId, idx) {
+    const lvl = gamesDB[gameId].levels[currentGameState[gameId].level];
+    const fb = document.getElementById(`${gameId}-feedback`);
+    const nb = document.getElementById(`${gameId}-next-btn`);
+    const btns = document.querySelectorAll(`#${gameId}-area .option-btn`);
+    btns.forEach(b => b.classList.add('disabled'));
+    if (idx === lvl.correct) {
+        fb.innerHTML = `<span class="success">✅ Дұрыс! Жарайсың!</span>`;
+        btns[idx].classList.add('correct');
+        nb.style.display = 'inline-flex';
+    } else {
+        fb.innerHTML = `<span class="error">❌ Қате. Дұрыс жауап: ${lvl.options[lvl.correct]}</span>`;
+        btns[idx].classList.add('wrong');
+        btns[lvl.correct].classList.add('correct');
+        nb.style.display = 'inline-flex';
+    }
+}
+
+function checkAnagramAnswer(gameId) {
+    const inp = document.getElementById(`${gameId}-input`).value.toUpperCase().trim();
+    const correct = gamesDB[gameId].levels[currentGameState[gameId].level].word;
+    const fb = document.getElementById(`${gameId}-feedback`);
+    const nb = document.getElementById(`${gameId}-next-btn`);
+    if (inp === correct) {
+        fb.innerHTML = `<span class="success">✅ Дұрыс! ${correct} 🎉</span>`;
+        nb.style.display = 'inline-flex';
+        document.getElementById(`${gameId}-input`).disabled = true;
+    } else {
+        fb.innerHTML = `<span class="error">❌ Қате. Тағы бір рет көріңіз.</span>`;
+    }
+}
+
+function addToAlgo(gameId, stepIndex, btn) {
+    const state = currentGameState[gameId];
+    state.userAlgo += stepIndex;
+    btn.classList.add('disabled');
+    btn.style.opacity = '0.5';
+    const resultSpan = document.getElementById(`${gameId}-result`);
+    const steps = gamesDB[gameId].levels[state.level].steps;
+    resultSpan.innerText = (resultSpan.innerText ? resultSpan.innerText + ' → ' : '') + steps[stepIndex];
+    const correct = gamesDB[gameId].levels[state.level].correctOrder;
+    if (state.userAlgo.length === correct.length) {
+        const fb = document.getElementById(`${gameId}-feedback`);
+        if (state.userAlgo === correct) {
+            fb.innerHTML = `<span class="success">✅ Дұрыс реттілік!</span>`;
+            document.getElementById(`${gameId}-next-btn`).style.display = 'inline-flex';
+        } else {
+            fb.innerHTML = `<span class="error">❌ Реттілік қате. "Тазалау" басыңыз.</span>`;
+        }
+    }
+}
+
+function nextLevel(gameId) {
+    currentGameState[gameId].level++;
+    renderGameLevel(gameId);
+}
+
+// =========================================
+// NAVIGATION
+// =========================================
+function showSection(sectionId) {
+    if (audioElement) { audioElement.pause(); }
+    document.querySelectorAll('.section').forEach(s => { s.classList.remove('active'); s.style.display='none'; });
+    document.querySelectorAll('.menu-item').forEach(m => m.classList.remove('active-menu'));
+    const sec = document.getElementById(sectionId);
+    if (sec) { sec.style.display='block'; setTimeout(()=>sec.classList.add('active'),30); }
+    if (sectionId==='lessons-grid-view') document.getElementById('menu-lessons').classList.add('active-menu');
+    if (sectionId==='kmzh-section') document.getElementById('menu-kmzh').classList.add('active-menu');
+    if (sectionId==='gaming-section') document.getElementById('menu-gaming').classList.add('active-menu');
+    if (sectionId==='teacher-section') { document.getElementById('menu-teacher').classList.add('active-menu'); initTeacherSection(); }
+    window.scrollTo({top:0,behavior:'smooth'});
+}
+
+function checkAnswer(btn, isCorrect) {
+    const parent = btn.parentElement;
+    const allBtns = parent.querySelectorAll('.option-btn');
+    allBtns.forEach(b => b.classList.add('disabled'));
+    if (isCorrect) { btn.classList.add('correct'); btn.innerHTML += ' ✅'; addScore(10); }
+    else { btn.classList.add('wrong'); btn.innerHTML += ' ❌'; }
+    saveProgress();
+}
+
+function toggleDarkMode() { document.body.classList.toggle('dark-mode'); }
+
+// =========================================
+// LANGUAGE SYSTEM
+// =========================================
+let currentLang = localStorage.getItem('edusmart_lang') || 'kk';
+
+function toggleLang() {
+    currentLang = currentLang === 'kk' ? 'ru' : 'kk';
+    localStorage.setItem('edusmart_lang', currentLang);
+    applyLang();
+}
+
+function applyLang() {
+    const btn = document.getElementById('lang-toggle-btn');
+    btn.textContent = currentLang === 'kk' ? '🌐 РУС' : '🌐 ҚАЗ';
+    document.querySelectorAll('[data-kk]').forEach(el => {
+        el.textContent = el.getAttribute('data-' + currentLang) || el.textContent;
+    });
+    document.querySelectorAll('[data-kk-placeholder]').forEach(el => {
+        el.placeholder = el.getAttribute('data-' + currentLang + '-placeholder') || el.placeholder;
+    });
+    // Re-render lessons cards with new lang
+    renderLessons();
+    updatePomodoro();
+}
+
+// =========================================
+// PROGRESS & STORAGE
+// =========================================
+function getProgress() {
+    return JSON.parse(localStorage.getItem('edusmart_progress') || '{"completed":[],"score":0,"tests":0,"bookmarks":[]}');
+}
+function saveProgressData(p) {
+    localStorage.setItem('edusmart_progress', JSON.stringify(p));
+}
+function addScore(pts) {
+    const p = getProgress();
+    p.score = (p.score || 0) + pts;
+    saveProgressData(p);
+}
+function markLessonComplete(id) {
+    const p = getProgress();
+    if (!p.completed.includes(id)) { p.completed.push(id); p.score = (p.score||0) + 20; }
+    saveProgressData(p);
+    updateProgressUI();
+    checkBadges();
+}
+function saveProgress() { updateProgressUI(); checkBadges(); }
+function toggleBookmark(id) {
+    const p = getProgress();
+    const idx = p.bookmarks.indexOf(id);
+    if (idx === -1) p.bookmarks.push(id);
+    else p.bookmarks.splice(idx, 1);
+    saveProgressData(p);
+    updateProgressUI();
+    return idx === -1;
+}
+function isBookmarked(id) { return getProgress().bookmarks.includes(id); }
+
+function updateProgressUI() {
+    const p = getProgress();
+    const total = lessonsData.length;
+    const done = p.completed.length;
+    const pct = total > 0 ? Math.round((done / total) * 100) : 0;
+    const set = v => { const el = document.getElementById(v[0]); if(el) el.textContent = v[1]; };
+    set(['stat-lessons-done', done]);
+    set(['stat-tests-done', p.tests || 0]);
+    set(['stat-score', p.score || 0]);
+    set(['stat-bookmarks', (p.bookmarks||[]).length]);
+    set(['progress-pct', pct + '%']);
+    const fill = document.getElementById('progress-fill');
+    if(fill) fill.style.width = pct + '%';
+}
+
+// =========================================
+// BADGES SYSTEM
+// =========================================
+const BADGES_DEF = [
+    { id:'first_lesson', icon:'🌱', kk:'Алғашқы қадам', ru:'Первый шаг', cond: p => p.completed.length >= 1 },
+    { id:'half_done',    icon:'🚀', kk:'Жарты жол',     ru:'Полпути',    cond: p => p.completed.length >= 2 },
+    { id:'all_done',     icon:'🏆', kk:'Чемпион!',       ru:'Чемпион!',   cond: p => p.completed.length >= lessonsData.length },
+    { id:'score_100',    icon:'⭐', kk:'100 ұпай',       ru:'100 очков',  cond: p => (p.score||0) >= 100 },
+    { id:'score_500',    icon:'💎', kk:'500 ұпай',       ru:'500 очков',  cond: p => (p.score||0) >= 500 },
+    { id:'bookmarker',   icon:'🔖', kk:'Кітапхана',      ru:'Библиотека', cond: p => (p.bookmarks||[]).length >= 2 },
+    { id:'pomodoro_hero',icon:'🍅', kk:'Помодоро батыр', ru:'Герой Помодоро', cond: p => (p.pomoSessions||0) >= 3 },
+];
+
+function checkBadges() {
+    const p = getProgress();
+    const earned = p.earned || [];
+    let changed = false;
+    BADGES_DEF.forEach(b => {
+        if (!earned.includes(b.id) && b.cond(p)) { earned.push(b.id); changed = true; showBadgeToast(b); }
+    });
+    if (changed) { p.earned = earned; saveProgressData(p); }
+    renderBadges();
+}
+function showBadgeToast(b) {
+    const t = document.createElement('div');
+    t.style.cssText = 'position:fixed;top:90px;right:24px;z-index:99999;background:linear-gradient(135deg,var(--primary),var(--secondary));color:white;padding:14px 20px;border-radius:16px;font-weight:800;font-size:0.95rem;box-shadow:0 8px 30px rgba(0,0,0,0.2);animation:zmsgIn 0.4s ease;';
+    t.innerHTML = b.icon + ' ' + (currentLang==='kk' ? b.kk : b.ru) + ' — жетістік алдыңыз!';
+    document.body.appendChild(t);
+    setTimeout(() => t.remove(), 3500);
+}
+function renderBadges() {
+    const container = document.getElementById('badges-container');
+    if (!container) return;
+    const p = getProgress();
+    const earned = p.earned || [];
+    container.innerHTML = BADGES_DEF.map(b => `
+        <div class="badge-item ${earned.includes(b.id) ? 'earned' : 'locked'}">
+            <span class="badge-icon">${b.icon}</span>
+            <span>${currentLang==='kk' ? b.kk : b.ru}</span>
+        </div>`).join('');
+}
+
+// =========================================
+// SEARCH / FILTER
+// =========================================
+function filterLessons(query) {
+    const q = query.toLowerCase().trim();
+    const grid = document.getElementById('main-grid');
+    const cards = grid.querySelectorAll('.card');
+    let visible = 0;
+    cards.forEach(card => {
+        const txt = card.innerText.toLowerCase();
+        const show = !q || txt.includes(q);
+        card.style.display = show ? '' : 'none';
+        if (show) visible++;
+    });
+    let empty = document.getElementById('search-empty');
+    if (!visible && q) {
+        if (!empty) {
+            empty = document.createElement('div');
+            empty.id = 'search-empty';
+            empty.className = 'search-results-empty';
+            empty.innerHTML = currentLang==='kk' ? '😔 Ештеңе табылмады' : '😔 Ничего не найдено';
+            grid.after(empty);
+        }
+    } else if (empty) { empty.remove(); }
+}
+
+// =========================================
+// POMODORO TIMER
+// =========================================
+const POMO_WORK = 25 * 60, POMO_BREAK = 5 * 60;
+let pomoInterval = null, pomoTime = POMO_WORK, pomoRunning = false;
+let pomoMode = 'work', pomoSessions = 0;
+
+function pomodoroToggle() {
+    const w = document.getElementById('pomodoro-widget');
+    w.classList.toggle('open');
+}
+function updatePomodoro() {
+    const mins = String(Math.floor(pomoTime/60)).padStart(2,'0');
+    const secs = String(pomoTime%60).padStart(2,'0');
+    const timerEl = document.getElementById('pomo-timer');
+    if (timerEl) timerEl.textContent = mins + ':' + secs;
+    const badge = document.getElementById('pomo-mode-badge');
+    if (badge) badge.textContent = pomoMode === 'work' ? (currentLang==='kk'?'Жұмыс':'Работа') : (currentLang==='kk'?'Демалыс':'Отдых');
+    const sessions = document.getElementById('pomo-sessions');
+    if (sessions) sessions.textContent = '🍅 ' + pomoSessions + (currentLang==='kk' ? ' сессия аяқталды' : ' сессий завершено');
+}
+function pomodoroStartStop() {
+    const btn = document.getElementById('pomo-start-btn');
+    const fab = document.getElementById('pomo-fab');
+    if (pomoRunning) {
+        clearInterval(pomoInterval); pomoRunning = false;
+        if(btn) btn.textContent = '▶ ' + (currentLang==='kk'?'Бастау':'Старт');
+        if(fab) fab.classList.remove('running');
+    } else {
+        pomoRunning = true;
+        if(btn) btn.textContent = '⏸ ' + (currentLang==='kk'?'Тоқтату':'Пауза');
+        if(fab) fab.classList.add('running');
+        pomoInterval = setInterval(() => {
+            pomoTime--;
+            if (pomoTime <= 0) {
+                clearInterval(pomoInterval); pomoRunning = false;
+                if(btn) btn.textContent = '▶ ' + (currentLang==='kk'?'Бастау':'Старт');
+                if(fab) fab.classList.remove('running');
+                if (pomoMode === 'work') {
+                    pomoSessions++;
+                    const p = getProgress(); p.pomoSessions = (p.pomoSessions||0)+1; saveProgressData(p);
+                    checkBadges();
+                    pomoMode = 'break'; pomoTime = POMO_BREAK;
+                    showBadgeToast({icon:'☕', kk:'Демалу уақыты!', ru:'Время отдыха!'});
+                } else { pomoMode = 'work'; pomoTime = POMO_WORK; }
+            }
+            updatePomodoro();
+        }, 1000);
+    }
+}
+function pomodoroReset() {
+    clearInterval(pomoInterval); pomoRunning = false; pomoMode = 'work'; pomoTime = POMO_WORK;
+    const btn = document.getElementById('pomo-start-btn');
+    const fab = document.getElementById('pomo-fab');
+    if(btn) btn.textContent = '▶ ' + (currentLang==='kk'?'Бастау':'Старт');
+    if(fab) fab.classList.remove('running');
+    updatePomodoro();
+}
+
+// =========================================
+// TEACHER PANEL
+// =========================================
+const TEACHER_PIN_KEY = 'edusmart_teacher_pin';
+const STUDENTS_KEY = 'edusmart_students';
+
+function getTeacherPin() { return localStorage.getItem(TEACHER_PIN_KEY) || '1234'; }
+function getStudents() { return JSON.parse(localStorage.getItem(STUDENTS_KEY) || '[]'); }
+function saveStudents(s) { localStorage.setItem(STUDENTS_KEY, JSON.stringify(s)); }
+
+function initTeacherSection() {
+    const isLoggedIn = sessionStorage.getItem('teacher_logged_in');
+    document.getElementById('teacher-pin-screen').style.display = isLoggedIn ? 'none' : 'block';
+    document.getElementById('teacher-main').style.display = isLoggedIn ? 'block' : 'none';
+    if (isLoggedIn) renderTeacherPanel();
+}
+
+function checkTeacherPin() {
+    const input = document.getElementById('teacher-pin-input');
+    const errEl = document.getElementById('pin-error');
+    if (input.value === getTeacherPin()) {
+        sessionStorage.setItem('teacher_logged_in', '1');
+        document.getElementById('teacher-pin-screen').style.display = 'none';
+        document.getElementById('teacher-main').style.display = 'block';
+        renderTeacherPanel();
+    } else {
+        errEl.textContent = currentLang==='kk' ? '❌ Қате PIN-код!' : '❌ Неверный PIN!';
+        input.value = '';
+        setTimeout(() => errEl.textContent = '', 2000);
+    }
+}
+
+function logoutTeacher() {
+    sessionStorage.removeItem('teacher_logged_in');
+    document.getElementById('teacher-pin-screen').style.display = 'block';
+    document.getElementById('teacher-main').style.display = 'none';
+    document.getElementById('teacher-pin-input').value = '';
+}
+
+function switchTeacherTab(tab) {
+    document.querySelectorAll('.teacher-tab').forEach((t,i) => {
+        const tabs = ['overview','students','settings'];
+        t.classList.toggle('active', tabs[i] === tab);
+    });
+    document.querySelectorAll('.teacher-tab-content').forEach(c => c.classList.remove('active'));
+    document.getElementById('tab-' + tab).classList.add('active');
+    if (tab === 'students') renderStudentsManage();
+}
+
+function renderTeacherPanel() {
+    const students = getStudents();
+    const myProgress = getProgress();
+    // Overview stats
+    const statsEl = document.getElementById('teacher-overview-stats');
+    if (statsEl) {
+        statsEl.innerHTML = `
+            <div class="progress-stat"><div class="progress-stat-num">${students.length}</div><div class="progress-stat-label">${currentLang==='kk'?'Оқушы':'Учеников'}</div></div>
+            <div class="progress-stat"><div class="progress-stat-num">${myProgress.completed.length}</div><div class="progress-stat-label">${currentLang==='kk'?'Аяқталған сабақ':'Уроков завершено'}</div></div>
+            <div class="progress-stat"><div class="progress-stat-num">${myProgress.score||0}</div><div class="progress-stat-label">${currentLang==='kk'?'Жинаған ұпай':'Очков набрано'}</div></div>
+            <div class="progress-stat"><div class="progress-stat-num">${myProgress.pomoSessions||0}</div><div class="progress-stat-label">${currentLang==='kk'?'Помодоро':'Помодоро'}</div></div>
+        `;
+    }
+    // Student table
+    const tbody = document.getElementById('student-tbody');
+    if (tbody) {
+        if (students.length === 0) {
+            tbody.innerHTML = `<tr><td colspan="5" style="text-align:center;color:var(--text-dim);padding:20px;">${currentLang==='kk'?'Оқушы жоқ. "Оқушылар" қойындысынан қосыңыз.':'Нет учеников. Добавьте во вкладке "Ученики".'}</td></tr>`;
+        } else {
+            tbody.innerHTML = students.map(s => {
+                const pct = Math.min(100, Math.round((s.lessons/lessonsData.length)*100));
+                return `<tr>
+                    <td><strong>${s.name}</strong><br><span style="font-size:0.78rem;color:var(--text-dim)">${s.class||''}</span></td>
+                    <td>${s.lessons||0}/${lessonsData.length}</td>
+                    <td><strong style="color:var(--primary)">${s.score||0}</strong></td>
+                    <td><div class="mini-progress"><div class="mini-progress-fill" style="width:${pct}%"></div></div> ${pct}%</td>
+                    <td>${s.badges||0} 🏅</td>
+                </tr>`;
+            }).join('');
+        }
+    }
+}
+
+function renderStudentsManage() {
+    const students = getStudents();
+    const el = document.getElementById('students-manage-list');
+    if (!el) return;
+    if (!students.length) { el.innerHTML = `<p style="color:var(--text-dim)">${currentLang==='kk'?'Тізім бос':'Список пуст'}</p>`; return; }
+    el.innerHTML = '<table class="student-table"><thead><tr><th>' + (currentLang==='kk'?'Аты':'Имя') + '</th><th>' + (currentLang==='kk'?'Сынып':'Класс') + '</th><th></th></tr></thead><tbody>' +
+        students.map((s,i) => `<tr><td>${s.name}</td><td>${s.class||'-'}</td><td><button class="teacher-btn danger" style="padding:5px 12px;font-size:0.78rem;" onclick="removeStudent(${i})">${currentLang==='kk'?'Жою':'Удалить'}</button></td></tr>`).join('') +
+        '</tbody></table>';
+}
+
+function addStudent() {
+    const name = document.getElementById('new-student-name').value.trim();
+    const cls = document.getElementById('new-student-class').value.trim();
+    if (!name) return;
+    const students = getStudents();
+    students.push({ name, class: cls, lessons: 0, score: 0, badges: 0 });
+    saveStudents(students);
+    document.getElementById('new-student-name').value = '';
+    document.getElementById('new-student-class').value = '';
+    renderStudentsManage();
+    renderTeacherPanel();
+}
+
+function removeStudent(idx) {
+    const students = getStudents();
+    students.splice(idx, 1);
+    saveStudents(students);
+    renderStudentsManage();
+    renderTeacherPanel();
+}
+
+function changePin() {
+    const val = document.getElementById('new-pin-input').value.trim();
+    if (val.length !== 4 || isNaN(val)) {
+        alert(currentLang==='kk' ? '4 сан еңгізіңіз' : 'Введите 4 цифры');
+        return;
+    }
+    localStorage.setItem(TEACHER_PIN_KEY, val);
+    document.getElementById('new-pin-input').value = '';
+    alert(currentLang==='kk' ? '✅ PIN-код сақталды!' : '✅ PIN сохранён!');
+}
+
+function clearAllData() {
+    if (confirm(currentLang==='kk' ? 'Барлық деректер тазаланады. Жалғастырасыз ба?' : 'Все данные будут удалены. Продолжить?')) {
+        localStorage.removeItem('edusmart_progress');
+        updateProgressUI(); renderBadges(); renderTeacherPanel();
+        alert(currentLang==='kk' ? '✅ Деректер тазаланды' : '✅ Данные очищены');
+    }
+}
+
+window.onload = () => {
+    applyLang();
+    renderLessons();
+    renderGames();
+    renderKMZH();
+    updateProgressUI();
+    checkBadges();
+    updatePomodoro();
+};
+</script>
+
+<!-- ========== ZERE CHATBOT ========== -->
+<button id="zere-fab" onclick="zereToggle()">
+    🤖
+    <span class="zere-tooltip">Зере — AI Көмекші</span>
+</button>
+
+<div id="zere-window">
+    <div class="zere-header">
+        <div class="zere-avatar">🦋</div>
+        <div class="zere-header-info">
+            <div class="zere-name">Зере — AI Көмекші</div>
+            <div class="zere-status">
+                <span class="zere-online-dot"></span>
+                Онлайн • Сізге көмектесуге дайын
+            </div>
+        </div>
+        <button class="zere-close" onclick="zereToggle()">✕</button>
+    </div>
+    <div class="zere-msgs" id="zere-msgs"></div>
+    <div class="zere-quickbtns" id="zere-quickbtns">
+        <button class="zere-qbtn" onclick="zereSend('Үй тапсырмама көмектес')">📚 Үй тапсырма</button>
+        <button class="zere-qbtn" onclick="zereSend('Математикадан мысал шеш')">🔢 Математика</button>
+        <button class="zere-qbtn" onclick="zereSend('Мені ынталандыр, жалықтым')">💫 Ынталандыр</button>
+        <button class="zere-qbtn" onclick="zereSend('Қазақ тілінен жаз')">✍️ Қазақ тілі</button>
+    </div>
+    <div class="zere-input-row">
+        <input id="zere-input" placeholder="Сұрағыңызды жазыңыз..." onkeydown="if(event.key==='Enter'){event.preventDefault();zereSend()}" />
+        <button id="zere-send" onclick="zereSend()">➤</button>
+    </div>
+</div>
+
+<script>
+// ========== ЗЕРЕ — ОФЛАЙН АҚЫЛДЫ ЧАТБОТ ==========
+const zereHistory = [];
+let zereTyping = false;
+
+// ============================================================
+// БІЛІМ БАЗАСЫ — 200+ сұраққа дайын жауаптар
+// ============================================================
+const ZERE_KB = [
+    // ── АМАНДАСУ ──
+    { keys:['сәлем','салем','сәл','привет','hello','hi','қайырлы'], ans:'Сәлеметсіз бе! 😊 Мен — Зере, сіздің оқу көмекшіңізбін. Математика, физика, тарих, тіл немесе кез-келген сабақ бойынша сұраңыз — дайынмын!' },
+    { keys:['қайырлы таң','қайырлы күн','қайырлы кеш'], ans:'Қайырлы! ☀️ Бүгін не оқимыз? Кез-келген сұрағыңызды қойыңыз!' },
+    { keys:['қалайсың','как дела','how are you','жақсысың ба'], ans:'Рахмет, жақсымын! 🌟 Сіздің сұрақтарыңызға жауап беруге дайынмын. Не туралы сөйлесеміз?' },
+
+    // ── КІМ СЕНСІҢ ──
+    { keys:['кімсің','сен кімсің','зере кім','who are you','ты кто'], ans:'Мен — **Зере** 🦋, EduSmart Elite платформасының AI оқу көмекшісімін! 5-11 сынып оқушыларына математика, физика, химия, биология, тарих, тіл пәндерінен көмек беремін. API қажет емес — офлайн жұмыс істеймін!' },
+    { keys:['edusmart','платформа туралы'], ans:'**EduSmart Elite** — қазақстандық оқушыларға арналған интерактивті оқу платформасы. Сабақтар, ойындар, тесттер және мен — Зере AI көмекшіңіз — барлығы бір жерде! 🎓' },
+
+    // ══════════════════════════════════════════
+    // МАТЕМАТИКА
+    // ══════════════════════════════════════════
+    { keys:['математика дегеніміз не','что такое математика'], ans:'**Математика** — сандар, фигуралар және олардың қатынастарын зерттейтін ғылым. Арифметика, алгебра, геометрия, статистика бөлімдерінен тұрады. 🔢' },
+    { keys:['қосу','жинақтау','сумма','сложение'], ans:'**Қосу (сложение):** Екі немесе одан көп санды біріктіру.\n➡ Мысал: 45 + 37 = 82\n\n**Жолы:** 40+30=70, 5+7=12, 70+12 = **82** ✅' },
+    { keys:['алу','азайту','вычитание'], ans:'**Алу (вычитание):** Үлкен саннан кіші санды алу.\n➡ Мысал: 94 − 38 = ?\n94 − 30 = 64, 64 − 8 = **56** ✅' },
+    { keys:['көбейту','умножение','таблица умножения'], ans:'**Көбейту кестесі (үзінді):**\n2×8=16 | 3×7=21 | 4×6=24\n5×9=45 | 6×8=48 | 7×7=49\n8×9=72 | 9×9=81\n\n💡 Кеңес: Әр күні 5 мысалды жаттаңыз!' },
+    { keys:['бөлу','деление'], ans:'**Бөлу (деление):** Санды тең бөліктерге бөлу.\n➡ Мысал: 72 ÷ 8 = **9**\nТексеру: 9 × 8 = 72 ✅\n\nЕсте: бөлгіш 0-ге тең болмайды!' },
+    { keys:['бөлшек','дробь','fraction'], ans:'**Бөлшектер (дроби):**\n• ½ = 0.5 (жарты)\n• ¼ = 0.25 (ширек)\n• ¾ = 0.75\n\n**Қосу:** ⅓ + ⅙ = 2/6 + 1/6 = **3/6 = ½**\n💡 Бөлгіштерді теңестіру керек!' },
+    { keys:['пайыз','процент','percent'], ans:'**Пайыз (процент):** 100-дің бір бөлігі.\n\n📌 Формула: Сан × Пайыз ÷ 100\n\nМысал: 200-дің 30%-і = 200×30÷100 = **60**\n\n💡 1% табу үшін санды 100-ге бөліңіз!' },
+    { keys:['квадрат теңдеу','квадратное уравнение'], ans:'**Квадрат теңдеу:** ax² + bx + c = 0\n\n📌 Дискриминант: **D = b² − 4ac**\n• D > 0 → 2 түбір\n• D = 0 → 1 түбір\n• D < 0 → түбір жоқ\n\nТүбірлер: x = (−b ± √D) / 2a' },
+    { keys:['пифагор','теорема пифагора','pythagorean'], ans:'**Пифагор теоремасы:**\na² + b² = c²\n(мұндағы c — гипотенуза)\n\nМысал: a=3, b=4 → c = √(9+16) = √25 = **5** ✅\n\n📌 3-4-5, 5-12-13, 8-15-17 — белгілі үштіктер!' },
+    { keys:['квадрат аудан','аудан','площадь','area'], ans:'**Аудан формулалары:**\n🔷 Шаршы: a²\n🔷 Тік бұрышты: a × b\n🔷 Үшбұрыш: (a × h) ÷ 2\n🔷 Дөңгелек: π × r²\n\nМысал: 6×4 тік бұрыштының ауданы = **24 см²**' },
+    { keys:['периметр','perimeter'], ans:'**Периметр** — фигураның барлық қабырғаларының қосындысы.\n🔷 Шаршы: 4a\n🔷 Тік бұрышты: 2(a+b)\n🔷 Үшбұрыш: a+b+c\n\nМысал: 5×3 тіктөртбұрыш → P = 2(5+3) = **16 см**' },
+    { keys:['бүтін сан','натурал сан','натуральные числа'], ans:'**Натурал сандар:** 1, 2, 3, 4, 5... (оң бүтін сандар)\n**Бүтін сандар:** ...−3, −2, −1, 0, 1, 2, 3...\n**Жұп сандар:** 2, 4, 6, 8...\n**Тақ сандар:** 1, 3, 5, 7...' },
+    { keys:['прогрессия','арифметическая прогрессия'], ans:'**Арифметикалық прогрессия:**\naₙ = a₁ + (n−1)d\nМұндағы d — айырым (разность)\n\nМысал: 2, 5, 8, 11... → d=3\na₁₀ = 2 + 9×3 = **29** ✅' },
+    { keys:['логарифм','log'], ans:'**Логарифм:**\nlog_a(b) = c ↔ aᶜ = b\n\nМысал: log₂(8) = 3, себебі 2³ = 8\n\n📌 Қасиеттер:\n• log(a×b) = log a + log b\n• log(a÷b) = log a − log b\n• log(aⁿ) = n × log a' },
+
+    // ══════════════════════════════════════════
+    // ФИЗИКА
+    // ══════════════════════════════════════════
+    { keys:['физика дегеніміз','физика нені зерттейді'], ans:'**Физика** — табиғат заңдарын, зат пен энергияның өзара әрекетін зерттейтін ғылым. Механика, термодинамика, электр, оптика, ядролық физика бөлімдерінен тұрады. ⚡' },
+    { keys:['ньютон заңы','newton','ньютонның'], ans:'**Ньютонның үш заңы:**\n\n1️⃣ **Инерция:** Күш болмаса, дене қозғалысын өзгертпейді.\n2️⃣ **F = ma** (күш = масса × үдеу)\n3️⃣ **Әсер-қарсы әсер:** Әр күшке тең, бірақ қарама-қарсы күш бар.' },
+    { keys:['жылдамдық','скорость','velocity','speed'], ans:'**Жылдамдық:**\nv = s ÷ t (жол ÷ уақыт)\n\nМысал: 120 км жолды 2 сағатта жүрсе:\nv = 120 ÷ 2 = **60 км/сағ** 🚗\n\nБірліктер: м/с, км/сағ (1 м/с = 3.6 км/сағ)' },
+    { keys:['күш','сила','force'], ans:'**Күш (Сила):**\nF = m × a\n\nМысал: 5 кг дене 2 м/с² үдесе:\nF = 5 × 2 = **10 Н (Ньютон)** 💪\n\nКүш түрлері: ауырлық, серпімділік, үйкеліс, электр...' },
+    { keys:['энергия','кинетикалық','потенциалды'], ans:'**Энергия түрлері:**\n🔹 Кинетикалық: Ek = ½mv² (қозғалыс энергиясы)\n🔹 Потенциалдық: Ep = mgh (биіктік энергиясы)\n🔹 Толық: E = Ek + Ep\n\nМысал: 2 кг дене 3 м/с жылдамдықта:\nEk = ½ × 2 × 9 = **9 Дж**' },
+    { keys:['электр','ток','напряжение','ом заңы','закон ома'], ans:'**Ом заңы:** I = U ÷ R\n\nМұндағы:\n⚡ I — ток күші (Ампер)\n⚡ U — кернеу (Вольт)\n⚡ R — кедергі (Ом)\n\nМысал: U=220В, R=110Ом → I = 220÷110 = **2 А**' },
+    { keys:['жылу','температура','термодинамика'], ans:'**Жылу мөлшері:**\nQ = cm∆t\n\nМұндағы:\n🌡 c — меншікті жылу сыйымдылығы\n🌡 m — масса\n🌡 ∆t — температура айырымы\n\nСудың c = 4200 Дж/(кг·°C)' },
+    { keys:['жарық','оптика','линза','зеркало'], ans:'**Оптика негіздері:**\n💡 Жарық жылдамдығы: c = 3×10⁸ м/с\n💡 Шағылу заңы: түсу бұрышы = шағылу бұрышы\n💡 Сыну: жарық тығыздау ортада сынады\n\nЖинаушы линза → кескін кішірейтеді/үлкейтеді' },
+    { keys:['магнит','магнитное поле'], ans:'**Магнит өрісі:**\nМагниттің 2 полюсі бар: Солтүстік (N) және Оңтүстік (S)\n\n📌 Бір атаулы полюстер итереді\n📌 Әр атаулы полюстер тартады\n\nЖердің магнит өрісі компасты бағыттайды 🧭' },
+
+    // ══════════════════════════════════════════
+    // ХИМИЯ
+    // ══════════════════════════════════════════
+    { keys:['химия дегеніміз','химия нені'], ans:'**Химия** — заттардың құрамын, қасиетін және өзара айналуын зерттейтін ғылым. Органикалық, бейорганикалық, аналитикалық химия бөлімдерінен тұрады. ⚗️' },
+    { keys:['периодтық кесте','менделеев','таблица менделеева'], ans:'**Периодтық кесте (Менделеев):**\n\n📋 118 элемент бар\n📋 7 период, 8 топ\n📋 Сол жақта — металдар, оң жақта — бейметалдар\n\nЕң жеңіл: Сутек (H, №1)\nЕң ауыр: Оганесон (Og, №118)' },
+    { keys:['атом','молекула','электрон'], ans:'**Атом құрылысы:**\n⚛ Ядро: протондар (+) + нейтрондар (0)\n⚛ Электрондар (−) — ядро айналасында\n\n📌 Протон саны = реттік нөмір\nМысал: Оттек (O) — 8 протон, 8 электрон' },
+    { keys:['валенттілік','валентность'], ans:'**Валенттілік** — атомның басқа атомдармен байланысу қабілеті.\n\nМысалдар:\n• Н — I валентті\n• О — II валентті\n• N — III валентті\n• C — IV валентті\n\n💡 Формула жазу үшін валенттіліктерді айқастырыңыз: H₂O, CO₂' },
+    { keys:['химиялық реакция','реакция жылдамдығы'], ans:'**Химиялық реакциялар:**\n\n🔸 Қосылу: A + B → AB\n🔸 Ыдырау: AB → A + B\n🔸 Алмасу: AB + C → AC + B\n🔸 Айырбас: AB + CD → AD + CB\n\nРеакция жылдамдығына: температура, концентрация, катализатор әсер етеді' },
+    { keys:['қышқыл','кислота','acid'], ans:'**Қышқылдар:**\nСутегі ионы (H⁺) беретін заттар\n\nМысалдар:\n🧪 HCl — тұз қышқылы\n🧪 H₂SO₄ — күкірт қышқылы\n🧪 HNO₃ — азот қышқылы\n\npH < 7 → қышқылдық орта\npH = 7 → бейтарап\npH > 7 → сілтілік' },
+    { keys:['оттек','кислород','oxygen'], ans:'**Оттек (O₂):**\n⚗ Реттік нөмір: 8\n⚗ Түсі, иісі жоқ газ\n⚗ Жану үшін қажет\n⚗ Ауа құрамы: 21%\n\n💡 Алу: 2KMnO₄ → K₂MnO₄ + MnO₂ + O₂↑' },
+
+    // ══════════════════════════════════════════
+    // БИОЛОГИЯ
+    // ══════════════════════════════════════════
+    { keys:['биология дегеніміз','биология нені зерттейді'], ans:'**Биология** — тірі организмдерді зерттейтін ғылым. Ботаника (өсімдіктер), зоология (жануарлар), анатомия (адам денесі), генетика, экология бөлімдерінен тұрады. 🌿' },
+    { keys:['жасуша','клетка','cell'], ans:'**Жасуша** — тіршіліктің ең кіші бірлігі.\n\n🔬 Жасуша бөліктері:\n• Мембрана — қабықша\n• Цитоплазма — ішкі орта\n• Ядро — генетикалық ақпарат орталығы\n• Митохондрия — энергия өндіреді\n• Рибосома — ақуыз синтездейді' },
+    { keys:['фотосинтез','photosynthesis'], ans:'**Фотосинтез:**\n6CO₂ + 6H₂O + күн сәулесі → C₆H₁₂O₆ + 6O₂\n\n🌿 Өсімдіктер жарықты пайдаланып:\n• Көмірқышқыл газын сіңіреді\n• Оттек бөледі\n• Глюкоза жасайды\n\nХлоропластта жүреді!' },
+    { keys:['генетика','ген','днк','дна','ДНҚ'], ans:'**Генетика негіздері:**\n\n🧬 ДНҚ — тұқымқуалаушылық ақпаратын сақтайды\n🧬 Ген — белгіні анықтайтын ДНҚ бөлімі\n🧬 Хромосома — адамда 46 дана (23 жұп)\n\nМендель заңдары:\n1. Доминанттылық\n2. Ажырау\n3. Тәуелсіз үйлесу' },
+    { keys:['эволюция','дарвин','darwin'], ans:'**Эволюция теориясы (Дарвин):**\n\n🦎 Табиғи сұрыпталу — бейімделген тіршіліктер сақталады\n🦎 Тіршілік үшін күрес\n🦎 Тұқымқуалаушылық өзгергіштік\n\nДарвин 1859 жылы "Түрлердің шығуы" кітабын жазды' },
+    { keys:['адам денесі','органдар','жүрек'], ans:'**Адам денесінің органдары:**\n❤️ Жүрек — қан айналымы\n🫁 Өкпе — тыныс алу\n🧠 Ми — нерв жүйесі\n🟤 Бауыр — қан тазалау\n🫘 Бүйрек — несеп бөлу\n💪 Бұлшықет — 600-ден астам түрі бар' },
+
+    // ══════════════════════════════════════════
+    // ТАРИХ
+    // ══════════════════════════════════════════
+    { keys:['тарих дегеніміз','история дегеніміз'], ans:'**Тарих** — өткен оқиғаларды зерттейтін ғылым. Деректану, археология, этнография тарихтың көмекші ғылымдары. 📜' },
+    { keys:['қазақстан тарихы','қазақ хандығы'], ans:'**Қазақ хандығы** 1465 жылы Жәнібек пен Керей хандардың жетекшілігімен құрылды.\n\n📌 Орналасқан жер: Шу мен Қозыбасы өңіріне\n📌 Алғашқы астанасы: Сығанақ\n📌 Алтын ғасыры: Хакназар, Есім, Тәуке хандар кезеңі' },
+    { keys:['абай','абай құнанбаев'], ans:'**Абай Құнанбаев (1845–1904):**\n✍️ Ұлы қазақ ақыны, жазушы, философ, композитор\n✍️ Туған жері: Шыңғыс тауы, Семей облысы\n✍️ Негізгі шығармалары: "Қара сөздер", "Масғұт", "Ескендір"\n✍️ Пушкин, Лермонтов, Крылов шығармаларын аударды' },
+    { keys:['ұлы жібек жолы','шелковый путь','silk road'], ans:'**Ұлы Жібек жолы** — Қытайдан Жерорта теңізіне дейінгі ежелгі сауда жолы.\n\n📍 Ұзындығы: 7000 км-ден астам\n📍 Тауарлар: жібек, дәрілер, хош иісті заттар\n📍 V ғасырда пайда болды\n📍 Қазақстан арқылы өтті' },
+    { keys:['екінші дүниежүзілік соғыс','вторая мировая','ww2'], ans:'**Екінші Дүниежүзілік соғыс:**\n📅 1939–1945 жылдар\n🌍 60-тан астам мемлекет қатысты\n💀 ~80 миллион адам шейіт болды\n\nКезеңдері:\n1939 — Польшаға шабуыл\n1941 — КСРО-ға шабуыл\n1944 — Нормандияда десант\n1945 — Германия, Жапония жеңілді' },
+    { keys:['ұлы отан соғысы','великая отечественная'], ans:'**Ұлы Отан соғысы:** 1941–1945\n\n🇰🇿 Қазақстаннан 1,2 млн адам соғысқа кетті\n🏅 500-ден астам қазақстандық Кеңес Одағының Батыры атанды\n💛 Бауыржан Момышұлы, Малик Ғабдуллин — халық батырлары' },
+
+    // ══════════════════════════════════════════
+    // ҚАЗАҚ ТІЛІ
+    // ══════════════════════════════════════════
+    { keys:['қазақ тілі','қазақ тілінің'], ans:'**Қазақ тілі** — түркі тілдер тобына жататын мемлекеттік тіл. Дыбыстар: 42 (28 дауыссыз + 14 дауысты). Сингармонизм заңы бойынша жұмыс істейді. 🇰🇿' },
+    { keys:['сөйлем мүшелері','члены предложения'], ans:'**Сөйлем мүшелері:**\n\n🔑 **Бастауыш** — кім? не? (подлежащее)\n🔑 **Баяндауыш** — не істейді? (сказуемое)\n🔑 **Толықтауыш** — кімді? нені?\n🔑 **Анықтауыш** — қандай? қай?\n🔑 **Пысықтауыш** — қайда? қашан? қалай?' },
+    { keys:['сөз таптары','части речи'], ans:'**Сөз таптары (10 түрі):**\n1. Зат есім (кім? не?)\n2. Сын есім (қандай?)\n3. Сан есім (қанша?)\n4. Есімдік (кім, мен, сен...)\n5. Етістік (не істейді?)\n6. Үстеу (қалай?)\n7. Шылау\n8. Одағай (ойбай!)\n9. Еліктеуіш\n10. Модаль сөздер' },
+    { keys:['жалғау','падеж','септік'], ans:'**Септіктер (7 септік):**\n1. Атау — кім? не?\n2. Ілік — кімнің? ненің?\n3. Барыс — кімге? неге?\n4. Табыс — кімді? нені?\n5. Жатыс — кімде? неде?\n6. Шығыс — кімнен? неден?\n7. Көмектес — кіммен? немен?' },
+    { keys:['дыбыс','дауысты','дауыссыз'], ans:'**Қазақ тілі дыбыстары:**\n\n🔵 **Дауысты (14):** а, ә, е, и, о, ө, ұ, ү, ы, і, у, й + э, ё\n🔴 **Дауыссыз (28):** б, в, г, ғ, д, ж, з, й, к, қ, л, м, н, ң, п, р, с, т, ф, х, һ, ц, ч, ш, щ, ъ, ь\n\n**Сингармонизм:** жуан+жуан, жіңішке+жіңішке' },
+
+    // ══════════════════════════════════════════
+    // АҒЫЛШЫН ТІЛІ
+    // ══════════════════════════════════════════
+    { keys:['ағылшын тілі','english grammar','грамматика'], ans:'**Ағылшын тілі негіздері:**\n\n📚 Артикльдер: **a/an** (белгісіз), **the** (белгілі)\n📚 To be: I **am**, He/She **is**, You/We/They **are**\n📚 Сөйлем: Subject + Verb + Object\n\nМысал: I **study** math every day.' },
+    { keys:['present simple','қазіргі шақ','настоящее время'], ans:'**Present Simple (Қазіргі шақ):**\n✅ I/You/We/They + V (негізгі форма)\n✅ He/She/It + V+s/es\n\nМысал:\n• I **play** football.\n• She **plays** football.\n• He **goes** to school.\n\n🕐 Сигналдар: every day, always, usually, often' },
+    { keys:['past simple','өткен шақ','прошедшее время'], ans:'**Past Simple (Өткен шақ):**\n✅ V₂ (екінші форма) / V+ed\n\nДұрыс етістіктер:\nplay → **played**, work → **worked**\n\nДұрыс емес:\ngo → **went**, see → **saw**, buy → **bought**\n\n🕐 Сигналдар: yesterday, last year, ago' },
+    { keys:['future simple','болашақ шақ','будущее время'], ans:'**Future Simple (Болашақ шақ):**\n✅ will + V (негізгі форма)\n\nМысалдар:\n• I **will study** tomorrow.\n• She **will not (won\'t) come**.\n• **Will** you help me?\n\n🕐 Сигналдар: tomorrow, next week, soon, in 2025' },
+    { keys:['санау ағылшынша','numbers english','numbers'], ans:'**Сандар (Numbers):**\n1-one, 2-two, 3-three, 4-four, 5-five\n6-six, 7-seven, 8-eight, 9-nine, 10-ten\n11-eleven, 12-twelve, 20-twenty\n30-thirty, 100-one hundred, 1000-one thousand' },
+    { keys:['апта күндері','days of week','weekdays'], ans:'**Апта күндері:**\nMonday — Дүйсенбі\nTuesday — Сейсенбі\nWednesday — Сәрсенбі\nThursday — Бейсенбі\nFriday — Жұма\nSaturday — Сенбі\nSunday — Жексенбі' },
+    { keys:['айлар','months','месяцы'], ans:'**Айлар (Months):**\nJanuary-Қаңтар | February-Ақпан | March-Наурыз\nApril-Сәуір | May-Мамыр | June-Маусым\nJuly-Шілде | August-Тамыз | September-Қыркүйек\nOctober-Қазан | November-Қараша | December-Желтоқсан' },
+
+    // ══════════════════════════════════════════
+    // ИНФОРМАТИКА
+    // ══════════════════════════════════════════
+    { keys:['компьютер дегеніміз','компьютер не','что такое компьютер'], ans:'**Компьютер** — ақпаратты өңдейтін электрондық құрылғы.\n\n🖥 Негізгі бөліктері:\n• **Процессор** — "миы", есептеулер жасайды\n• **Жедел жад (RAM)** — уақытша сақтайды\n• **Тұрақты жад (HDD/SSD)** — тұрақты сақтайды\n• **Монитор** — бейнелейді\n• **Пернетақта + тышқан** — енгізу' },
+    { keys:['бит байт','бит и байт','информация өлшемі'], ans:'**Ақпарат өлшем бірліктері:**\n\n📊 1 байт = 8 бит\n📊 1 Килобайт (КБ) = 1024 байт\n📊 1 Мегабайт (МБ) = 1024 КБ\n📊 1 Гигабайт (ГБ) = 1024 МБ\n📊 1 Терабайт (ТБ) = 1024 ГБ\n\n💡 Бир MP3 ән ≈ 4-5 МБ' },
+    { keys:['алгоритм дегеніміз','что такое алгоритм'], ans:'**Алгоритм** — есепті шешу үшін нақты, ретпен берілген нұсқаулар жиынтығы.\n\n📌 Қасиеттері:\n✅ Нақтылық\n✅ Түсініктілік\n✅ Ақырлылық\n✅ Нәтижелілік\n\nМысал: Шай қайнату алгоритмі:\n1. Суды қайнат\n2. Шай демде\n3. Кесеге құй' },
+    { keys:['бағдарламалау','программирование','python','scratch'], ans:'**Бағдарламалау тілдері:**\n\n🐍 **Python** — оңай, AI үшін\n🎮 **Scratch** — балаларға арналған\n🌐 **HTML/CSS** — веб-сайт жасау\n⚡ **JavaScript** — интерактивті сайттар\n☕ **Java** — Android қосымшалары\n\n💡 Бастаушыларға: Scratch немесе Python!' },
+    { keys:['интернет дегеніміз','что такое интернет'], ans:'**Интернет** — дүниежүзіндегі компьютерлерді біріктіретін жаһандық желі.\n\n🌐 1969 жылы АҚШ-та ARPANET ретінде пайда болды\n🌐 WWW (World Wide Web) — 1991 жылы Тим Бернерс-Ли ойлап тапты\n🌐 TCP/IP — деректер беру хаттамасы\n🌐 URL, HTTP, браузер — интернет элементтері' },
+    { keys:['операциялық жүйе','windows','linux','macos'], ans:'**Операциялық жүйелер:**\n\n💻 **Windows** (Microsoft) — ең кең таралған\n🐧 **Linux** — тегін, ашық код\n🍎 **macOS** (Apple) — Mac компьютерлерде\n📱 **Android** — смартфондарда\n📱 **iOS** — iPhone-да\n\nОЖ — бағдарламалар мен аппаратты басқарады' },
+
+    // ══════════════════════════════════════════
+    // ГЕОГРАФИЯ
+    // ══════════════════════════════════════════
+    { keys:['қазақстан туралы','казахстан','о казахстане'], ans:'**Қазақстан:**\n🌍 Аумақ: 2 724 900 км² (әлемде 9-орын)\n👥 Халық: ~19 млн адам\n🏙 Астана: Астана қаласы\n🌊 Жаратылыс: дала, шөл, тау\n🛢 Байлық: мұнай, газ, уран, мыс\n📅 Тәуелсіздік: 1991 жылы 16 желтоқсан' },
+    { keys:['материктер','континенттер','continents'], ans:'**Материктер (7):**\n🌍 Евразия — ең үлкен\n🌎 Солтүстік Америка\n🌎 Оңтүстік Америка\n🌏 Африка — ең ыстық\n🌏 Австралия — ең кіші\n❄️ Антарктида — ең суық\n🌊 Океандар (5): Тынық, Атлант, Үнді, Солтүстік Мұзды, Оңтүстік' },
+    { keys:['климат','ауа райы','погода'], ans:'**Климат белдеулері:**\n❄️ Арктикалық — өте суық\n🌨 Субарктикалық\n🍂 Қоңыржай — 4 мезгіл\n☀️ Субтропиктік\n🌴 Тропиктік — ыстық, жаңбырлы\n🌵 Экваторлық — ыстық, ылғалды\n\nҚазақстан — қоңыржай климат белдеуінде' },
+
+    // ══════════════════════════════════════════
+    // МОТИВАЦИЯ / ЭМОЦИЯ
+    // ══════════════════════════════════════════
+    { keys:['жалықтым','скучно','надоело','жалыктым'], ans:'Түсінемін, кейде оқу жалықтырады 😌 Бірақ бүгін аздап ғана оқысаңыз да — болашаққа үлкен қадам!\n\n💡 **Кеңес:** Помодоро әдісін қолданыңыз — 25 мин оқы, 5 мин дем ал. Платформадағы таймерді пайдаланыңыз! ⏱️' },
+    { keys:['қиын','трудно','не понимаю','түсінбедім','түсінбеймін'], ans:'Ештеңе емес, бәрі де бірден түсінбейді! 💪 Қай тақырып қиын болып жатыр? Мен бірге түсіндіремін, қадамдап баяу айтамын — нақты сұраңыз!' },
+    { keys:['рахмет','спасибо','thanks','thank you'], ans:'Өтінемін! 😊 Тағы сұрақ болса, ашық айтыңыз. Сізге оқуда табыс тілеймін! 🌟' },
+    { keys:['керемет','отлично','excellent','super','супер','жарайсын'], ans:'Өте жақсы! 🎉 Сіз тамаша ынтамен оқып жатырсыз. Осылай жалғастырыңыз, нәтиже міндетті түрде болады! 🏆' },
+    { keys:['білмеймін','не знаю','i don\'t know'], ans:'Білмесеңіз — сұраңыз, ол бәрінен де дұрыс! 💡 Нақты тақырыпты айтсаңыз, мен түсіндіремін. Қандай сабақ немесе тақырып туралы?' },
+    { keys:['үй тапсырмасы','домашнее задание','homework'], ans:'Үй тапсырмасына көмек керек пе? 📚 Қандай пән? Тақырыпты немесе мысалды жазып жіберіңіз, бірге шешеміз! ✏️' },
+    { keys:['емтихан','экзамен','exam','тест'], ans:'Емтиханға дайындалу кезеңі бе? 📖 Мынаны ұсынамын:\n1️⃣ Өткен тақырыптарды қайтала\n2️⃣ Мысалдар шеш\n3️⃣ Конспект жаз\n4️⃣ Тест тапсыр\n\nҚай пән? Бірге дайындалайық! 💪' },
+
+    // ══════════════════════════════════════════
+    // ЖАЛПЫ БІЛІМ
+    // ══════════════════════════════════════════
+    { keys:['ай неден жасалған','луна из чего'], ans:'**Ай** — Жерден 384 000 км қашықтықта орналасқан жалғыз табиғи серігіміз.\n🌙 Өз жарығы жоқ — Күннің жарығын шағылыстырады\n🌙 Аумағы Жерден 4 есе кіші\n🌙 Ауасы мен суы жоқ\n🌙 1969 жылы Нил Армстронг Айға алғаш аяқ басты' },
+    { keys:['күн жүйесі','солнечная система','solar system'], ans:'**Күн жүйесі (8 планета):**\n🪐 Меркурий → Шолпан → Жер → Марс\n🪐 Юпитер → Сатурн → Уран → Нептун\n\n💡 Есте сақтау: "МеШЖМаЮСУН"\nЖерден Күнге: 150 млн км\nЖарық жетеді: 8 минутта' },
+    { keys:['динозавр','динозавры','dinosaur'], ans:'**Динозаврлар** — 230 млн жыл бұрын пайда болып, 66 млн жыл бұрын жойылды.\n🦕 Тасбақа, құстар — туыстары\n🦖 Ең үлкені: Аргентинозавр (30м)\n🦷 Ең ірі жыртқыш: T-Rex\n💥 Жойылу себебі: Метеорит соқтығысуы' },
+    { keys:['жер ауданы','жер шары','земля','earth'], ans:'**Жер планетасы:**\n🌍 Диаметрі: 12 742 км\n🌍 Ауданы: 510 млн км²\n🌍 Тіршілік бар жалғыз планета\n🌍 Жасы: 4.5 млрд жыл\n🌍 Халқы: ~8 млрд адам\n🌊 Мұхит: беттің 71%-і' },
+
+    // ── ЖАТТЫҒУ / ТЕСТ ──
+    { keys:['тест бер','тест жаса','сынақ','проверь меня','quiz me'], ans:'Жарайды, шағын тест! 🧠\n\n**Математика:** 15% × 200 = ?\n**Физика:** F=ma; m=3кг, a=4м/с² → F=?\n**Тарих:** Қазақ хандығы қай жылы құрылды?\n**Ағылшын:** "Мен мектепке барамын" ағылшынша?\n\nЖауаптарыңызды жазыңыз! ✏️' },
+    { keys:['жауап','ответ','answer'], ans:'Жауаптар: 🎯\n✅ **Математика:** 15%×200 = **30**\n✅ **Физика:** F = 3×4 = **12 Н**\n✅ **Тарих:** **1465** жылы\n✅ **Ағылшын:** "**I go to school**"\n\nНеше дұрыс болды? 😊' },
+
+    // ── КӘСІП / БОЛАШАҚ ──
+    { keys:['дәрігер болу','дәрігер','врач','медицина'], ans:'**Дәрігер болу үшін:**\n🩺 Биология, химия — жақсы білу керек\n🩺 Медицина факультетінде 5-6 жыл оқу\n🩺 Интернатура — 2 жыл тәжірибе\n\nҚазақстандағы медицина жоғары оқу орындары:\n• Астана медицина университеті\n• Алматы мемлекеттік медицина университеті' },
+    { keys:['бағдарламашы болу','программист','it маман'], ans:'**IT маман болу жолы:**\n💻 Математика, информатика — негіз\n💻 Python немесе JavaScript-пен бастаңыз (ТЕГІН оқуға болады!)\n💻 Жобалар жаса — портфолио жина\n💻 GitHub-та код сақта\n\n🌟 IT — Қазақстандағы ең сұранысты мамандық!' },
+
+    // ── БЕЛГІСІЗ СҰРАҚ ──
+    { keys:['fallback'], ans:'Түсінбедім 🤔 Сұрағыңызды нақтырақ жазыңыз немесе мына тақырыптардан бірін сұраңыз:\n\n📐 Математика | ⚡ Физика | ⚗️ Химия\n🌿 Биология | 📜 Тарих | 🇰🇿 Қазақ тілі\n🇬🇧 Ағылшын тілі | 💻 Информатика' }
+];
+
+// ── ЖАУАП ІЗДЕУ ФУНКЦИЯСЫ ──
+function zereFindAnswer(userText) {
+    const text = userText.toLowerCase()
+        .replace(/[?!.,;:]/g, ' ')
+        .replace(/\s+/g, ' ')
+        .trim();
+
+    // Нақты сәйкестік іздеу
+    for (const item of ZERE_KB) {
+        if (item.keys[0] === 'fallback') continue;
+        for (const key of item.keys) {
+            if (text.includes(key.toLowerCase())) {
+                return item.ans;
+            }
+        }
+    }
+
+    // Ішінара сәйкестік — кілт сөздер
+    const words = text.split(' ');
+    let bestScore = 0;
+    let bestAns = null;
+    for (const item of ZERE_KB) {
+        if (item.keys[0] === 'fallback') continue;
+        let score = 0;
+        for (const key of item.keys) {
+            const keyWords = key.toLowerCase().split(' ');
+            for (const kw of keyWords) {
+                if (kw.length > 2 && words.some(w => w.includes(kw) || kw.includes(w))) score++;
+            }
+        }
+        if (score > bestScore) { bestScore = score; bestAns = item.ans; }
+    }
+    if (bestScore >= 1) return bestAns;
+
+    // Fallback
+    const fb = ZERE_KB.find(i => i.keys[0] === 'fallback');
+    return fb ? fb.ans : 'Кешіріңіз, бұл сұраққа жауап таба алмадым. Нақтырақ жазыңыз! 😊';
+}
+
+// ── UI ФУНКЦИЯЛАРЫ ──
+function zereToggle() {
+    const win = document.getElementById('zere-window');
+    win.classList.toggle('open');
+    if (win.classList.contains('open') && zereHistory.length === 0) {
+        setTimeout(() => zereGreet(), 400);
+    }
+}
+
+function zereGreet() {
+    const hour = new Date().getHours();
+    const greeting = hour < 12 ? 'Қайырлы таң' : hour < 18 ? 'Қайырлы күн' : 'Қайырлы кеш';
+    zereAddMsg('bot', greeting + '! 🌟 Мен — **Зере**, сіздің ақылды оқу серіктесіңізбін!\n\nAPI қажет емес — баяу байланыс болмасын! ⚡\n\n📚 Мынаны сұрай аласыз:\n• Математика, Физика, Химия\n• Биология, Тарих, Қазақ тілі\n• Ағылшын тілі, Информатика\n\nНе туралы сөйлесеміз? 😊');
+}
+
+function zereAddMsg(role, text) {
+    const msgs = document.getElementById('zere-msgs');
+    const div = document.createElement('div');
+    div.className = 'zmsg' + (role === 'user' ? ' user' : '');
+    const safe = text.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+    const formatted = safe
+        .replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>')
+        .replace(/\n/g,'<br>');
+    div.innerHTML = '<div class="zmsg-avatar">' + (role === 'user' ? '🎓' : '🦋') + '</div><div class="zmsg-bubble">' + formatted + '</div>';
+    msgs.appendChild(div);
+    msgs.scrollTop = msgs.scrollHeight;
+}
+
+function zereShowTyping() {
+    const msgs = document.getElementById('zere-msgs');
+    const div = document.createElement('div');
+    div.className = 'zmsg'; div.id = 'zere-typing-indicator';
+    div.innerHTML = '<div class="zmsg-avatar">🦋</div><div class="zere-typing"><span></span><span></span><span></span></div>';
+    msgs.appendChild(div);
+    msgs.scrollTop = msgs.scrollHeight;
+}
+
+function zereRemoveTyping() {
+    const el = document.getElementById('zere-typing-indicator');
+    if (el) el.remove();
+}
+
+async function zereSend(quickText) {
+    const input = document.getElementById('zere-input');
+    const text = quickText || input.value.trim();
+    if (!text || zereTyping) return;
+    input.value = '';
+    zereAddMsg('user', text);
+    zereHistory.push({ role: 'user', content: text });
+    const qbtns = document.getElementById('zere-quickbtns');
+    if (qbtns) qbtns.style.display = 'none';
+    zereTyping = true;
+    document.getElementById('zere-send').disabled = true;
+    zereShowTyping();
+
+    // Жасанды кідіріс — шынайы сезім үшін
+    await new Promise(r => setTimeout(r, 600 + Math.random() * 500));
+
+    const reply = zereFindAnswer(text);
+    zereRemoveTyping();
+    zereAddMsg('bot', reply);
+    zereHistory.push({ role: 'assistant', content: reply });
+
+    zereTyping = false;
+    document.getElementById('zere-send').disabled = false;
+    document.getElementById('zere-input').focus();
+}
+</script>
+</body>
+</html>
